@@ -7,8 +7,8 @@
   const lines = [
     '> initializing legal_hackathon.exe...',
     '> loading modules: [AI, LLM, NLP, Legal]',
-    '> connecting to HSG network... OK',
-    '> checking venue: Werner-Siemens-MLE-Haus... OK',
+    '> connecting to UNISG network... OK',
+    '> checking venue: Rosenbergstrasse 30... OK',
     '> setting date: November 7-8, 2026',
     '> allocating 24h of hacking time...',
     '> ready. welcome, hacker.',
@@ -133,7 +133,7 @@ setInterval(tick, 1000);
 
 /* ── Typing Effect ── */
 (function () {
-  const words = ['law', 'future', 'code', 'justice', 'system'];
+  const words = ['law', 'future', 'code', 'justice'];
   let wi = 0, ci = 0, del = false;
   const el = document.getElementById('typed-text');
 
@@ -192,7 +192,7 @@ const mapObs = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) {
       e.target.innerHTML = `<iframe
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2711.5!2d9.3697!3d47.4300!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x479b1e36113f16e7%3A0x0!2sUniversity+of+St.+Gallen!5e0!3m2!1sen!2sch!4v1"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2699.3303475434873!2d9.365943188063849!3d47.425001526184765!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x479b1e49898ebd9b%3A0x25559adad24043dc!2sRosenbergstrasse%2030%2C%209001%20St.%20Gallen!5e0!3m2!1sen!2sch!4v1776621735328!5m2!1sen!2sch"
         loading="lazy"
         referrerpolicy="no-referrer-when-downgrade"
         style="width:100%;height:100%;border:none;filter:grayscale(1) invert(1) contrast(0.8) brightness(0.7)">

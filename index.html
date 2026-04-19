@@ -1,26 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Legal Hackathon @ HSG — November 7–8, 2026</title>
-  <meta name="description" content="The first Legal Hackathon at the University of St. Gallen. 24 hours of hacking the law with AI. November 7–8, 2026.">
-  <meta property="og:title" content="Legal Hackathon @ HSG — Hack the Law">
-  <meta property="og:description" content="24 hours. Interdisciplinary teams. AI-powered solutions for real legal challenges. Nov 7–8, 2026.">
+  <title>Legal Hackathon @ UNISG — November 7–8, 2026</title>
+  <meta name="description"
+    content="The first Legal Hackathon at the University of St. Gallen. 24 hours of building AI-powered legal solutions. November 7–8, 2026.">
+  <meta property="og:title" content="Legal Hackathon @ UNISG — Hack the Law">
+  <meta property="og:description"
+    content="24 hours. Interdisciplinary teams. AI-powered solutions for real legal challenges. Nov 7–8, 2026.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.legalhackathons.org">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Legal Hackathon @ HSG">
+  <meta name="twitter:title" content="Legal Hackathon @ UNISG">
   <meta name="twitter:description" content="24 hours of hacking the law. November 7–8, 2026. University of St. Gallen.">
   <link rel="canonical" href="https://www.legalhackathons.org">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Sora:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <!-- Boot sequence -->
-  <div id="boot"><div id="boot-text"></div></div>
+  <div id="boot">
+    <div id="boot-text"></div>
+  </div>
 
   <canvas id="matrix"></canvas>
   <div id="cursor-glow"></div>
@@ -31,10 +40,17 @@
   <!-- ── Navigation ── -->
   <nav id="nav">
     <div class="nav-inner">
-      <a class="nav-logo" href="#">legal_hackathon<span>@hsg</span></a>
-      <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Toggle menu">
+      <a class="nav-logo" href="#">
+        <svg width="18" height="18" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0">
+          <rect width="32" height="32" rx="6" fill="#00FF88"/>
+          <text x="50%" y="22" font-family="monospace" font-size="18" font-weight="bold" fill="#07070A" text-anchor="middle">§</text>
+        </svg>
+        legal_hackathon<span>@unisg</span>
+      </a>
+      <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')"
+        aria-label="Toggle menu">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 12h18M3 6h18M3 18h18"/>
+          <path d="M3 12h18M3 6h18M3 18h18" />
         </svg>
       </button>
       <ul class="nav-links">
@@ -43,6 +59,8 @@
         <li><a href="#schedule">schedule</a></li>
         <li><a href="#challenges">challenges</a></li>
         <li><a href="#prizes">prizes</a></li>
+        <li><a href="#sponsors">sponsors</a></li>
+        <li><a href="#partners">partners</a></li>
         <li><a href="#faq">faq</a></li>
         <li><a href="#register" class="nav-cta">register()</a></li>
       </ul>
@@ -59,10 +77,14 @@
     </p>
     <div class="hero-terminal reveal reveal-d2">
       <span class="pr">$</span> hackathon <span class="fl">--date</span> <span class="vl">"Nov 7-8, 2026"</span><br>
-      <span class="pr">$</span> hackathon <span class="fl">--venue</span> <span class="vl">"Werner-Siemens-MLE-Haus"</span><br>
-      <span class="pr">$</span> hackathon <span class="fl">--duration</span> <span class="vl">24h</span> <span class="fl">--teams</span> <span class="vl">"up to 4"</span><br>
-      <span class="pr">$</span> hackathon <span class="fl">--stack</span> <span class="vl">"AI, LLMs, Legal Tech, NLP"</span><br>
-      <span class="pr">$</span> hackathon <span class="fl">--cost</span> <span class="vl">free</span> <span class="fl">--food</span> <span class="vl">included</span>
+      <span class="pr">$</span> hackathon <span class="fl">--venue</span> <span class="vl">"Rosenbergstrasse 30, St.
+        Gallen"</span><br>
+      <span class="pr">$</span> hackathon <span class="fl">--duration</span> <span class="vl">24h</span> <span
+        class="fl">--teams</span> <span class="vl">"up to 4"</span><br>
+      <span class="pr">$</span> hackathon <span class="fl">--stack</span> <span class="vl">"AI, LLMs, Legal Tech,
+        NLP"</span><br>
+      <span class="pr">$</span> hackathon <span class="fl">--cost</span> <span class="vl">free</span> <span
+        class="fl">--food</span> <span class="vl">included</span>
     </div>
     <div class="hero-actions reveal reveal-d3">
       <a href="#register" class="btn-g">register() &rarr;</a>
@@ -73,10 +95,13 @@
   <!-- ── Stats ── -->
   <div class="stats-bar reveal">
     <div class="stats-inner">
-      <div class="stat"><span class="stat-num" data-target="24" data-suffix="h">0h</span><span class="stat-label">Nonstop hacking</span></div>
-      <div class="stat"><span class="stat-num" data-target="100" data-suffix="+">0+</span><span class="stat-label">Participants</span></div>
-      <div class="stat"><span class="stat-num" data-target="5" data-prefix="CHF " data-suffix="K+">CHF 0K+</span><span class="stat-label">In prizes</span></div>
-      <div class="stat"><span class="stat-num" data-target="4" data-suffix="+">0+</span><span class="stat-label">Challenge tracks</span></div>
+      <div class="stat"><span class="stat-num" data-target="24" data-suffix="h">0h</span><span
+          class="stat-label">Nonstop hacking</span></div>
+      <div class="stat"><span class="stat-num" data-target="100">0</span><span class="stat-label">Spots — first come,
+          first served</span></div>
+      <div class="stat"><span class="stat-num stat-fun">100%</span><span class="stat-label">Fun guaranteed</span></div>
+      <div class="stat"><span class="stat-num" data-target="4" data-suffix="+">0+</span><span
+          class="stat-label">Challenge tracks</span></div>
     </div>
   </div>
 
@@ -97,12 +122,14 @@
   <section class="section" id="about">
     <div class="section-label reveal">// about</div>
     <h2 class="section-title reveal">Why a <em>legal hackathon</em>?</h2>
-    <p class="section-desc reveal">AI is transforming every industry. But the legal sector needs more than off-the-shelf tools — it needs precision, ethics, and domain expertise.</p>
+    <p class="section-desc reveal">AI is transforming every industry. But the legal sector needs more than off-the-shelf
+      tools — it needs precision, ethics, and domain expertise.</p>
     <div class="cards">
       <div class="card reveal">
         <div class="tag">Problem</div>
         <h3>Innovation gap</h3>
-        <p>General AI doesn't meet the precision required for legal-grade output. Linguistic complexity, specialised data, high stakes.</p>
+        <p>Legal work demands more than just speed; it requires precision, domain expertise, and accountability to
+          handle complex nuances. Specialized solutions co-developed between law and tech folks are thus needed.</p>
       </div>
       <div class="card reveal reveal-d1">
         <div class="tag">Solution</div>
@@ -112,12 +139,15 @@
       <div class="card reveal reveal-d2">
         <div class="tag">Impact</div>
         <h3>Access to justice</h3>
-        <p>Practical, ethical, and secure tools that increase efficiency and broaden access to justice for the public.</p>
+        <p>Practical, ethical, and secure tools that increase efficiency and broaden access to justice for the public.
+        </p>
       </div>
     </div>
   </section>
 
-  <div class="divider"><hr class="divider-line"></div>
+  <div class="divider">
+    <hr class="divider-line">
+  </div>
 
   <!-- ── How It Works ── -->
   <section class="section" id="howto">
@@ -148,46 +178,92 @@
     </div>
   </section>
 
-  <div class="divider"><hr class="divider-line"></div>
+  <div class="divider">
+    <hr class="divider-line">
+  </div>
 
   <!-- ── Challenges ── -->
   <section class="section" id="challenges">
     <div class="section-label reveal">// challenges</div>
     <h2 class="section-title reveal">Challenge <em>tracks</em></h2>
-    <p class="section-desc reveal">Each sponsor presents a real-world legal-AI problem. Choose the one that excites you most. Final challenges announced closer to the event.</p>
+    <p class="section-desc reveal">Each sponsor presents a real-world legal-AI problem. Choose the one that excites you
+      most. Final challenge descriptions will be announced closer to the event, they will cover these themes.</p>
     <div class="challenges">
       <div class="challenge reveal">
         <div class="ch-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+            <path d="M14 2v6h6" />
+            <path d="M16 13H8" />
+            <path d="M16 17H8" />
+            <path d="M10 9H8" />
+          </svg>
         </div>
         <h3>Contract analysis</h3>
         <p>AI-powered clause detection, risk scoring, and automated review.</p>
       </div>
       <div class="challenge reveal reveal-d1">
         <div class="ch-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
+            <path d="M21 21l-4.35-4.35" />
+          </svg>
         </div>
         <h3>Legal research</h3>
         <p>Smarter case law search, precedent matching, and knowledge graphs.</p>
       </div>
       <div class="challenge reveal reveal-d2">
         <div class="ch-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 00-3-3.87" />
+            <path d="M16 3.13a4 4 0 010 7.75" />
+          </svg>
         </div>
         <h3>Access to justice</h3>
         <p>Tools that make legal services accessible to non-experts.</p>
       </div>
       <div class="challenge reveal reveal-d3">
         <div class="ch-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <path d="M3 9h18" />
+            <path d="M9 21V9" />
+          </svg>
         </div>
         <h3>Legal design</h3>
         <p>Human-centered interfaces for legal documents and processes.</p>
       </div>
+      <div class="challenge reveal">
+        <div class="ch-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+        </div>
+        <h3>Efficient processes</h3>
+        <p>Optimizing legal and justice operations — reducing delays, cutting costs, improving access to courts and
+          legal services.</p>
+      </div>
+      <div class="challenge reveal reveal-d1">
+        <div class="ch-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <path d="M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <h3>Regulatory intelligence</h3>
+        <p>Monitoring, analyzing, and implementing new laws and regulations at speed — helping firms stay compliant and
+          competitive.</p>
+      </div>
     </div>
   </section>
 
-  <div class="divider"><hr class="divider-line"></div>
+  <div class="divider">
+    <hr class="divider-line">
+  </div>
 
   <!-- ── Schedule ── -->
   <section class="section" id="schedule">
@@ -197,42 +273,131 @@
     <div class="timeline reveal">
       <div class="tl-day">
         <div class="tl-day-header">Sat Nov 7</div>
-        <div class="tl-item"><span class="tl-time">10:00</span><span class="tl-title">Arrival &amp; registration</span><div class="tl-detail">Badge pickup, welcome coffee &amp; pastries</div></div>
-        <div class="tl-item"><span class="tl-time">10:30</span><span class="tl-title">Opening ceremony</span><div class="tl-detail">Welcome, rules, code of conduct</div></div>
-        <div class="tl-item"><span class="tl-time">11:00</span><span class="tl-title">Challenge presentations &amp; tech talks</span><div class="tl-detail">Sponsors present their challenges</div></div>
-        <div class="tl-item tl-hl"><span class="tl-time">12:00</span><span class="tl-title">Hacking starts!</span><div class="tl-detail">24h countdown begins. Lunch served.</div></div>
-        <div class="tl-item"><span class="tl-time">15:30</span><span class="tl-title">Afternoon snacks</span><div class="tl-detail">Fruit, energy bars, coffee</div></div>
-        <div class="tl-item"><span class="tl-time">19:00</span><span class="tl-title">Dinner</span><div class="tl-detail">Hot meal</div></div>
-        <div class="tl-item"><span class="tl-time">22:00</span><span class="tl-title">Night station opens</span><div class="tl-detail">Sandwiches, energy drinks, coffee until 06:00</div></div>
+        <div class="tl-item"><span class="tl-time">10:00</span><span class="tl-title">Arrival &amp; registration</span>
+          <div class="tl-detail">Badge pickup, welcome coffee &amp; pastries</div>
+        </div>
+        <div class="tl-item"><span class="tl-time">10:30</span><span class="tl-title">Opening ceremony</span>
+          <div class="tl-detail">Welcome, rules, code of conduct</div>
+        </div>
+        <div class="tl-item"><span class="tl-time">11:00</span><span class="tl-title">Challenge presentations &amp; tech
+            talks</span>
+          <div class="tl-detail">Sponsors present their challenges</div>
+        </div>
+        <div class="tl-item tl-hl"><span class="tl-time">12:00</span><span class="tl-title">Hacking starts!</span>
+          <div class="tl-detail">24h countdown begins. Lunch served. We have fuel to keep you going all day and night.
+          </div>
+        </div>
+        <div class="tl-item"><span class="tl-time">19:00</span><span class="tl-title">Dinner</span>
+          <div class="tl-detail">Hot meal</div>
+        </div>
+        <div class="tl-item"><span class="tl-time">22:00</span><span class="tl-title">Night station opens</span>
+          <div class="tl-detail">Sandwiches, energy drinks, coffee until 06:00</div>
+        </div>
       </div>
       <div class="tl-day">
         <div class="tl-day-header">Sun Nov 8</div>
-        <div class="tl-item"><span class="tl-time">07:00</span><span class="tl-title">Breakfast</span><div class="tl-detail">Pastries, yogurt, coffee</div></div>
-        <div class="tl-item tl-hl"><span class="tl-time">12:00</span><span class="tl-title">Hacking ends — code freeze</span><div class="tl-detail">Submit your projects</div></div>
-        <div class="tl-item"><span class="tl-time">12:00</span><span class="tl-title">Pitches to jury panels</span><div class="tl-detail">3 min per team, parallel stations (until 14:00)</div></div>
-        <div class="tl-item"><span class="tl-time">14:30</span><span class="tl-title">Final presentations</span><div class="tl-detail">Best teams present to full audience</div></div>
-        <div class="tl-item tl-hl"><span class="tl-time">15:00</span><span class="tl-title">Awards &amp; closing</span><div class="tl-detail">Prizes, closing remarks, group photo</div></div>
-        <div class="tl-item"><span class="tl-time">15:30</span><span class="tl-title">Closing apero</span><div class="tl-detail">Drinks &amp; networking</div></div>
+        <div class="tl-item"><span class="tl-time">07:00</span><span class="tl-title">Breakfast</span>
+          <div class="tl-detail">Pastries, yogurt, coffee</div>
+        </div>
+        <div class="tl-item tl-hl"><span class="tl-time">12:00</span><span class="tl-title">Hacking ends — code
+            freeze</span>
+          <div class="tl-detail">Submit your projects</div>
+        </div>
+        <div class="tl-item"><span class="tl-time">12:00</span><span class="tl-title">Pitches to jury panels</span>
+          <div class="tl-detail">3 min per team, parallel stations (until 14:00)</div>
+        </div>
+        <div class="tl-item"><span class="tl-time">14:30</span><span class="tl-title">Final presentations</span>
+          <div class="tl-detail">Best teams present to full audience</div>
+        </div>
+        <div class="tl-item tl-hl"><span class="tl-time">15:00</span><span class="tl-title">Awards &amp; closing</span>
+          <div class="tl-detail">Prizes, closing remarks, group photo</div>
+        </div>
+        <div class="tl-item"><span class="tl-time">15:30</span><span class="tl-title">Closing apero</span>
+          <div class="tl-detail">Drinks &amp; networking</div>
+        </div>
       </div>
     </div>
   </section>
 
-  <div class="divider"><hr class="divider-line"></div>
+  <div class="divider">
+    <hr class="divider-line">
+  </div>
 
   <!-- ── Prizes ── -->
   <section class="section" id="prizes">
     <div class="section-label reveal">// prizes</div>
     <h2 class="section-title reveal">What you can <em>win</em></h2>
-    <p class="section-desc reveal">Prizes across multiple categories. Meaningful rewards you can actually use.</p>
+    <p class="section-desc reveal">Prizes across multiple categories — details to be announced once sponsors are
+      confirmed.</p>
     <div class="prizes">
-      <div class="prize gold reveal"><div class="prize-rank">1st</div><h3>Grand prize</h3><p>CHF 400 in vouchers per team member + featured in sponsor communications</p></div>
-      <div class="prize reveal reveal-d1"><div class="prize-rank">2nd</div><h3>Runner-up</h3><p>CHF 300 in vouchers per team member</p></div>
-      <div class="prize reveal reveal-d2"><div class="prize-rank">3rd</div><h3>Third place</h3><p>CHF 200 in vouchers per team member</p></div>
-      <div class="prize reveal reveal-d3"><div class="prize-rank">&lt;/&gt;</div><h3>Best Legal Design</h3><p>Special category: most user-centered, accessible solution</p></div>
+      <div class="prize gold reveal">
+        <div class="prize-rank">1st</div>
+        <h3>Grand prize</h3>
+        <p>To be announced &mdash; featured in sponsor communications and beyond</p>
+      </div>
+      <div class="prize reveal reveal-d1">
+        <div class="prize-rank">2nd</div>
+        <h3>Runner-up</h3>
+        <p>To be announced</p>
+      </div>
+      <div class="prize reveal reveal-d2">
+        <div class="prize-rank">3rd</div>
+        <h3>Third place</h3>
+        <p>To be announced</p>
+      </div>
+      <div class="prize reveal reveal-d3">
+        <div class="prize-rank">&lt;/&gt;</div>
+        <h3>Best Legal Design</h3>
+        <p>Special category: most user-centered, accessible solution</p>
+      </div>
     </div>
   </section>
 
-  <div class="divider"><hr class="divider-line"></div>
+  <!-- ── Sponsors mini-banner ── -->
+  <div class="divider">
+    <hr class="divider-line">
+  </div>
+
+  <section class="section" id="sponsors">
+    <div class="section-label reveal">// sponsors</div>
+    <h2 class="section-title reveal">Made possible <em>by</em></h2>
+    <p class="section-desc reveal">Proudly supported by leading institutions in law and innovation.</p>
+    <div class="reveal">
+      <div class="sponsor-tier">
+        <h3>Sponsors</h3>
+        <div class="sponsor-logos">
+          <div class="sponsor-ph">Homburger</div>
+          <div class="sponsor-ph">Kanton St. Gallen</div>
+        </div>
+      </div>
+    </div>
+    <p class="reveal" style="margin-top:1.5rem;font-size:0.82rem;color:var(--muted)">
+      Interested in sponsoring? <a href="#">Sponsorship Package</a> &middot; <a
+        href="mailto:legal-hackathon@unisg.ch">legal-hackathon@unisg.ch</a>
+    </p>
+  </section>
+
+  <div class="divider">
+    <hr class="divider-line">
+  </div>
+
+  <!-- ── Partners ── -->
+  <section class="section" id="partners">
+    <div class="section-label reveal">// partners</div>
+    <h2 class="section-title reveal">Our <em>partners</em></h2>
+    <p class="section-desc reveal">Academic and civic partners who help make this event possible.</p>
+    <div class="reveal">
+      <div class="sponsor-tier">
+        <div class="sponsor-logos">
+          <div class="sponsor-ph">Partners to be announced</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider">
+    <hr class="divider-line">
+  </div>
 
   <!-- ── Why Join ── -->
   <section class="section" id="why">
@@ -240,51 +405,57 @@
     <h2 class="section-title reveal">What's in it <em>for you</em>?</h2>
     <div class="reasons">
       <div class="reason reveal">
-        <div class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+        <div class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <path d="M2 12l10 5 10-5" />
+          </svg></div>
         <h3>Build something real</h3>
         <p>Idea to working prototype in 24 hours. No slides — code, creativity, collaboration.</p>
       </div>
       <div class="reason reveal reveal-d1">
-        <div class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg></div>
+        <div class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 00-3-3.87" />
+          </svg></div>
         <h3>Meet the industry</h3>
         <p>Law firms, legal tech companies, AI builders. Sponsor booths and mentoring all weekend.</p>
       </div>
       <div class="reason reveal reveal-d2">
-        <div class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <div class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+          </svg></div>
         <h3>Boost your career</h3>
         <p>Opt in to share your CV with sponsors — direct pipeline to internships and jobs in legal tech.</p>
       </div>
       <div class="reason reveal reveal-d1">
-        <div class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg></div>
+        <div class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M18 8h1a4 4 0 010 8h-1" />
+            <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" />
+          </svg></div>
         <h3>24h fuel station</h3>
         <p>All meals, snacks, and energy drinks provided. Red Bull, Focuswater, Zweifel — the works.</p>
       </div>
       <div class="reason reveal reveal-d2">
-        <div class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+        <div class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+          </svg></div>
         <h3>Learn &amp; grow</h3>
         <p>Workshops, tech talks, and hands-on experience with cutting-edge AI tools in a legal context.</p>
       </div>
     </div>
   </section>
 
-  <div class="divider"><hr class="divider-line"></div>
-
-  <!-- ── Sponsors ── -->
-  <section class="section" id="sponsors">
-    <div class="section-label reveal">// sponsors</div>
-    <h2 class="section-title reveal">Our <em>partners</em></h2>
-    <div class="reveal">
-      <div class="sponsor-tier"><h3>Platinum</h3><div class="sponsor-logos"><div class="sponsor-ph">your_logo_here</div></div></div>
-      <div class="sponsor-tier"><h3>Gold</h3><div class="sponsor-logos"><div class="sponsor-ph">your_logo_here</div></div></div>
-      <div class="sponsor-tier"><h3>Silver</h3><div class="sponsor-logos"><div class="sponsor-ph">your_logo_here</div></div></div>
-      <div class="sponsor-tier"><h3>In collaboration with</h3><div class="sponsor-logos"><div class="sponsor-ph">CODEX (Stanford)</div><div class="sponsor-ph">OpenJustice</div></div></div>
-    </div>
-    <p class="reveal" style="margin-top:1.5rem;font-size:0.82rem;color:var(--muted)">
-      Interested? <a href="#">Sponsorship Package</a> &middot; <a href="mailto:legal-hackathon@unisg.ch">legal-hackathon@unisg.ch</a>
-    </p>
-  </section>
-
-  <div class="divider"><hr class="divider-line"></div>
+  <div class="divider">
+    <hr class="divider-line">
+  </div>
 
   <!-- ── Location ── -->
   <section class="section" id="location">
@@ -292,31 +463,91 @@
     <h2 class="section-title reveal">Find <em>us</em></h2>
     <div class="loc-grid reveal">
       <div class="loc-info">
-        <h3>Werner-Siemens-MLE-Haus</h3>
-        <p>University of St. Gallen</p>
-        <p>Rosenbergstrasse, 9000 St. Gallen</p>
+        <h3>University of St. Gallen</h3>
+        <p>Rosenbergstrasse 30, 9000 St. Gallen</p>
         <p>Switzerland</p>
-        <p style="margin-top:0.75rem;font-size:0.78rem;color:var(--muted)">Large collaboration spaces, fast Wi-Fi, 24h access. All meals served on-site.</p>
+        <p style="margin-top:0.75rem;font-size:0.78rem;color:var(--muted)">Large collaboration spaces, fast Wi-Fi, 24h
+          access. All meals served on-site.</p>
       </div>
       <div class="loc-map" id="map-container"></div>
     </div>
   </section>
 
-  <div class="divider"><hr class="divider-line"></div>
+  <div class="divider">
+    <hr class="divider-line">
+  </div>
 
   <!-- ── FAQ ── -->
   <section class="section" id="faq">
     <div class="section-label reveal">// faq</div>
     <h2 class="section-title reveal">Frequently asked <em>questions</em></h2>
     <div class="faq-list reveal">
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Do I need to know how to code?</button><div class="faq-a" role="region"><p>Not necessarily. Teams need a mix of legal knowledge, technical skills, and design thinking. We actively encourage interdisciplinary participation — some of the best hackathon ideas come from non-coders.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Can I participate without a team?</button><div class="faq-a" role="region"><p>Absolutely. Join our Discord server to find teammates before the event, or form a team during the opening session on Saturday morning.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">What should I bring?</button><div class="faq-a" role="region"><p>Your laptop, charger, and any tools or hardware you want to use. We provide food, drinks, Wi-Fi, and power. Bring a sleeping bag if you plan to nap overnight.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Who owns the intellectual property?</button><div class="faq-a" role="region"><p>All IP remains with the participants. You own everything you build during the hackathon.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Is there a participation fee?</button><div class="faq-a" role="region"><p>The event is free. A small registration deposit may apply to reduce no-shows, which will be refunded upon attendance.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Will my CV be shared with sponsors?</button><div class="faq-a" role="region"><p>Only if you explicitly opt in during registration. You choose whether your CV is visible to event sponsors.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">I'm not an HSG student — can I join?</button><div class="faq-a" role="region"><p>Yes! The hackathon is open to students, researchers, developers, and professionals from all universities and organisations.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">When will challenges be announced?</button><div class="faq-a" role="region"><p>Challenge details will be published on this website and our Discord once sponsors have finalised their tracks. Follow us for updates.</p></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Do I need to know how to code?</button>
+        <div class="faq-a" role="region">
+          <p>Not necessarily. Teams need a mix of legal knowledge, technical skills, and design thinking. We actively
+            encourage interdisciplinary participation — some of the best hackathon ideas come from non-coders.</p>
+        </div>
+      </div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Can I participate without a team?</button>
+        <div class="faq-a" role="region">
+          <p>Absolutely. Join our Discord server to find teammates before the event, or form a team during the opening
+            session on Saturday morning.</p>
+        </div>
+      </div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">What should I bring?</button>
+        <div class="faq-a" role="region">
+          <p>Your laptop, charger, and any tools or hardware you want to use. We provide food, drinks, Wi-Fi, and power.
+            Bring a sleeping bag if you plan to nap overnight.</p>
+        </div>
+      </div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Who owns the intellectual property?</button>
+        <div class="faq-a" role="region">
+          <p>All IP remains with the participants. You own everything you build during the hackathon.</p>
+        </div>
+      </div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Is there a participation fee?</button>
+        <div class="faq-a" role="region">
+          <p>No. This event is completely free thanks to our generous sponsors — please give them a big thank you!</p>
+        </div>
+      </div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Will my CV be shared with sponsors?</button>
+        <div class="faq-a" role="region">
+          <p>Only if you explicitly opt in during registration. You choose whether your CV is visible to event sponsors.
+          </p>
+        </div>
+      </div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">I am not a student at the University of St.
+          Gallen — can I join?</button>
+        <div class="faq-a" role="region">
+          <p>Unfortunately, no. The hackathon is not yet open for students outside the University of St. Gallen. Email
+            us to convince the sponsors and us to include you nonetheless.</p>
+        </div>
+      </div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">When will challenges be announced?</button>
+        <div class="faq-a" role="region">
+          <p>Challenge details will be published on this website and our Discord once sponsors have finalised their
+            tracks. Follow us for updates.</p>
+        </div>
+      </div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Which software solutions can be used?</button>
+        <div class="faq-a" role="region">
+          <p>Participants may use any tools and resources available to them.</p>
+        </div>
+      </div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Can participants continue working on projects
+          that are already in progress?</button>
+        <div class="faq-a" role="region">
+          <p>We encourage the development of new ideas at the hackathon. However, existing ideas may also be further
+            developed within the challenge. We rely on your transparency and honesty in this regard!</p>
+        </div>
+      </div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Is overnight accommodation available on
+          site?</button>
+        <div class="faq-a" role="region">
+          <p>It is possible to stay overnight at the hackathon. However, we do not provide any sleeping infrastructure,
+            so you will need to bring your own sleeping bag or mat.</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -324,10 +555,11 @@
   <section class="section" id="register">
     <div class="cta-box reveal">
       <h2>Ready to <em>hack the law</em>?</h2>
-      <p>Spots are limited. Secure yours now.</p>
-      <a href="https://tally.so/r/YOUR_FORM_ID" target="_blank" class="btn-g" style="font-size:0.9rem;padding:0.85rem 2.5rem">register() &rarr;</a>
+      <p>Spots are limited to 100. Secure yours now.</p>
+      <a href="https://tally.so/r/YOUR_FORM_ID" target="_blank" class="btn-g"
+        style="font-size:0.9rem;padding:0.85rem 2.5rem">register() &rarr;</a>
       <p style="margin-top:0.75rem;font-size:0.7rem;color:var(--dim);position:relative;z-index:1">
-        Registration includes optional CV upload for sponsor access &middot; Powered by Tally
+        Registration includes optional CV upload for sponsor access
       </p>
     </div>
   </section>
@@ -335,17 +567,17 @@
   <!-- ── Footer ── -->
   <footer>
     <div>
-      <p style="font-weight:600;color:var(--text);margin-bottom:0.3rem;font-size:0.75rem">Legal Hackathon @ HSG</p>
-      <p>Law &amp; Tech Lab &middot; Legal Design &amp; Code Lab &middot; University of St. Gallen</p>
+      <p style="font-weight:600;color:var(--text);margin-bottom:0.3rem;font-size:0.75rem">Legal Hackathon @ UNISG</p>
+      <p>Law &amp; Tech Lab &middot; Legal Design &amp; Code Lab &middot; Future Society Hub</p>
       <p style="margin-top:0.3rem"><a href="mailto:legal-hackathon@unisg.ch">legal-hackathon@unisg.ch</a></p>
     </div>
     <div style="text-align:right">
-      <p>In collaboration with</p>
-      <p>CODEX (Stanford) &middot; OpenJustice</p>
-      <p style="margin-top:0.5rem"><a href="https://discord.gg/YOUR_INVITE" target="_blank">Discord</a></p>
+      <p><a href="privacy-policy.html">Privacy Policy</a> &middot; <a href="terms.html">Terms &amp; Conditions</a></p>
+      <p style="margin-top:0.35rem"><a href="https://discord.gg/YOUR_INVITE" target="_blank">Discord</a></p>
     </div>
   </footer>
 
   <script src="main.js"></script>
 </body>
+
 </html>
