@@ -718,6 +718,17 @@ nav.scrolled { box-shadow: 0 4px 30px rgba(0, 255, 136, 0.03); }
   transition: border-color 0.2s;
 }
 .sponsor-ph:hover { border-color: var(--green); }
+.partner-logos-grid { gap: 3rem; }
+.partner-logo {
+  max-height: 65px;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+.partner-logo:hover {
+  opacity: 1;
+}
 
 /* ── Location ── */
 .loc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
