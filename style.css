@@ -356,6 +356,8 @@ nav.scrolled { box-shadow: 0 4px 30px rgba(0, 255, 136, 0.03); }
   border: 1px solid var(--border);
   transition: all 0.2s;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
 }
 .btn-o:hover { border-color: var(--muted); background: var(--surface); text-decoration: none; }
 
@@ -697,6 +699,27 @@ nav.scrolled { box-shadow: 0 4px 30px rgba(0, 255, 136, 0.03); }
 .reason p { position: relative; z-index: 1; font-size: 0.82rem; color: var(--muted); font-weight: 300; }
 
 /* ── Sponsors ── */
+.sponsor-cta-box {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2rem 2.5rem;
+  background: var(--surface);
+}
+.sponsor-cta-box p {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+.sponsor-cta-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+}
+.sponsor-cta-actions .btn-g,
+.sponsor-cta-actions .btn-o { width: fit-content; }
+
 .sponsor-tier { margin-bottom: 1.5rem; }
 .sponsor-tier h3 {
   font-family: var(--font-mono);
@@ -718,9 +741,11 @@ nav.scrolled { box-shadow: 0 4px 30px rgba(0, 255, 136, 0.03); }
   transition: border-color 0.2s;
 }
 .sponsor-ph:hover { border-color: var(--green); }
-.partner-logos-grid { gap: 3rem; }
+.partner-logos-grid { gap: 2rem; flex-wrap: wrap; }
+.partner-link { cursor: pointer; }
 .partner-logo {
-  max-height: 65px;
+  max-height: 55px;
+  max-width: 160px;
   width: auto;
   object-fit: contain;
   opacity: 0.8;
