@@ -2,6 +2,19 @@
    Legal Hackathon @ HSG — Main JavaScript
    ============================================================ */
 
+/* ── CSRF Token Helper ── */
+window.__csrf = '';
+window.__csrfReady = null;
+window.fetchCsrf = function (backendUrl) {
+  if (window.__csrfReady) return window.__csrfReady;
+  window.__csrfReady = fetch(`${backendUrl}/csrf/`, { credentials: 'include' })
+    .then(r => r.json())
+    .then(d => { if (d.csrftoken) window.__csrf = d.csrftoken; })
+    .catch(() => {});
+  return window.__csrfReady;
+};
+window.getCsrfToken = function () { return window.__csrf; };
+
 /* ── Boot Sequence ── */
 (function () {
   const el = document.getElementById('boot-text');
@@ -97,6 +110,7 @@ document.addEventListener('mousemove', e => {
 /* ── Parallax Floating Elements ── */
 (function () {
   const layer = document.getElementById('parallax');
+  if (!layer) return;
   const items = [];
   const brackets = ['{', '}', '[', ']', '()', '</>', '&&', '||', '===', 'fn()', 'if()'];
 
