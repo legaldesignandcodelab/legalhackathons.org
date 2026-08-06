@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Participant Portal — Legal Hackathon @ UNISG</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── Portal shell ── */
+    body { overflow-x: hidden; }
+
+    .portal-shell {
+      display: flex;
+      min-height: 100vh;
+      padding-top: 64px; /* nav height */
+    }
+
+    /* ── Sidebar ── */
+    .portal-sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      background: rgba(7,7,10,0.95);
+      border-right: 1px solid var(--border);
+      padding: 32px 0 40px;
+      position: fixed;
+      top: 64px;
+      bottom: 0;
+      left: 0;
+      overflow-y: auto;
+      z-index: 10;
+      transition: transform 0.25s;
+    }
+
+    .sidebar-section {
+      padding: 0 16px;
+      margin-bottom: 8px;
+    }
+
+    .sidebar-label {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.25);
+      padding: 16px 12px 6px;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      color: var(--muted);
+      transition: background 0.15s, color 0.15s;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      font-family: var(--sans);
+    }
+
+    .sidebar-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+
+    .sidebar-item.active {
+      background: rgba(0,255,136,0.08);
+      color: var(--green);
+    }
+
+    .sidebar-item svg { flex-shrink: 0; opacity: 0.7; }
+    .sidebar-item.active svg { opacity: 1; }
+
+    .sidebar-sub {
+      padding-left: 36px;
+    }
+
+    .sidebar-sub .sidebar-item {
+      font-size: 0.82rem;
+      padding: 7px 12px;
+    }
+
+    .sidebar-sub .sidebar-item::before {
+      content: '·';
+      color: var(--muted);
+      margin-right: 4px;
+    }
+
+    .sidebar-sub .sidebar-item.active::before { color: var(--green); }
+
+    /* ── Main content ── */
+    .portal-main {
+      flex: 1;
+      margin-left: 220px;
+      padding: 40px 40px 80px;
+    }
+
+    /* Narrow panels get constrained width, cases get full width */
+    #panel-home,
+    #panel-team,
+    #panel-cases-preference,
+    #panel-submission {
+      max-width: 680px;
+    }
+
+    @media (max-width: 768px) {
+      .portal-sidebar { transform: translateX(-100%); }
+      .portal-sidebar.open { transform: translateX(0); }
+      .portal-main { margin-left: 0; padding: 20px 16px 60px; }
+      .sidebar-toggle { display: flex !important; }
+    }
+
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 100;
+      background: var(--green);
+      color: #07070A;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    /* ── Panels ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── Page header ── */
+    .page-header { margin-bottom: 32px; }
+    .page-tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+    .page-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
+    .page-sub { color: var(--muted); font-size: 0.9rem; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .card h2 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
+
+    /* ── Form elements ── */
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .form-group label { font-size: 0.83rem; font-weight: 500; color: var(--text); }
+    .form-group input, .form-group textarea, .form-group select {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--green); }
+    .form-group textarea { resize: vertical; min-height: 90px; }
+
+    /* ── Buttons ── */
+    .btn { border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; font-family: var(--sans); padding: 11px 20px; font-size: 0.9rem; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: var(--green); color: #07070A; }
+    .btn-primary:hover:not(:disabled) { opacity: 0.88; }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover:not(:disabled) { border-color: var(--green); }
+    .btn-danger { background: transparent; color: #ff7070; border: 1px solid rgba(255,80,80,0.3); }
+    .btn-danger:hover:not(:disabled) { border-color: #ff5050; }
+    .btn-full { width: 100%; }
+
+    /* ── Messages ── */
+    .msg { border-radius: 8px; padding: 11px 15px; font-size: 0.87rem; margin-bottom: 14px; display: none; line-height: 1.5; }
+    .msg.show-success { display: block; background: rgba(0,255,136,0.08); border: 1px solid var(--green); color: var(--green); }
+    .msg.show-error   { display: block; background: rgba(255,80,80,0.08); border: 1px solid #ff5050; color: #ff7070; }
+    .msg.show-info    { display: block; background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--muted); }
+
+    /* ── Status badge ── */
+    .badge {
+      display: inline-block; font-family: var(--mono); font-size: 0.68rem;
+      letter-spacing: 1px; padding: 3px 12px; border-radius: 100px; text-transform: uppercase;
+    }
+    .badge-confirmed { background: rgba(0,255,136,0.12); color: var(--green); border: 1px solid rgba(0,255,136,0.3); }
+    .badge-pending   { background: rgba(255,200,0,0.1); color: #ffc800; border: 1px solid rgba(255,200,0,0.3); }
+    .badge-waitlist  { background: rgba(167,139,250,0.1); color: #A78BFA; border: 1px solid rgba(167,139,250,0.3); }
+
+    /* ── Info rows ── */
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 0.86rem; }
+    .info-row:last-child { border-bottom: none; }
+    .info-row .key { color: var(--muted); }
+    .info-row .val { font-weight: 500; text-align: right; max-width: 60%; }
+
+    /* ── Skill pills ── */
+    .pill { display: inline-block; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 100px; padding: 2px 10px; font-size: 0.72rem; font-family: var(--mono); margin: 2px; }
+
+    /* ── Divider ── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+    /* ── Auth views (full-page, shown before login) ── */
+    .auth-wrap {
+      display: flex; align-items: center; justify-content: center;
+      min-height: calc(100vh - 64px); padding: 40px 20px;
+    }
+    .auth-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 40px; width: 100%; max-width: 480px;
+    }
+    .auth-card h1 { font-size: 1.7rem; font-weight: 800; margin-bottom: 24px; }
+
+    /* ── Invite code ── */
+    .invite-row {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 16px; margin: 12px 0;
+    }
+    .invite-code { font-family: var(--mono); font-size: 1.5rem; font-weight: 700; color: var(--green); letter-spacing: 5px; flex: 1; }
+    .copy-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 6px; padding: 6px 12px; font-size: 0.75rem; cursor: pointer; font-family: var(--mono); transition: border-color 0.2s, color 0.2s; }
+    .copy-btn:hover { border-color: var(--green); color: var(--green); }
+
+    /* ── Member list ── */
+    .member-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.86rem; }
+    .member-item:last-child { border-bottom: none; }
+    .member-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(0,255,136,0.12); border: 1px solid rgba(0,255,136,0.25); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.72rem; color: var(--green); flex-shrink: 0; }
+    .member-name { font-weight: 600; }
+    .member-sub { font-size: 0.76rem; color: var(--muted); }
+    .role-pill { font-family: var(--mono); font-size: 0.65rem; padding: 2px 8px; border-radius: 100px; background: rgba(255,255,255,0.06); color: var(--muted); margin-left: auto; flex-shrink: 0; }
+    .role-pill.owner { background: rgba(0,255,136,0.1); color: var(--green); }
+
+    /* ── Sub-tabs ── */
+    .subtabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 4px; }
+    .subtab { flex: 1; padding: 9px; background: transparent; border: none; border-radius: 7px; color: var(--muted); font-family: var(--mono); font-size: 0.78rem; cursor: pointer; transition: background 0.15s, color 0.15s; }
+    .subtab.active { background: rgba(0,255,136,0.1); color: var(--green); }
+
+    /* ── Schedule ── */
+    @keyframes pulse-badge {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+      50% { opacity: 0.85; box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+    }
+    @keyframes pulse-green {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.4); }
+      50% { box-shadow: 0 0 0 6px rgba(0,255,136,0); }
+    }
+
+    /* top bar */
+    .sched-topbar {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .sched-topbar-date {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--green);
+    }
+
+    /* next up hero */
+    .sched-hero {
+      background: linear-gradient(135deg, rgba(0,255,136,0.07) 0%, rgba(0,255,136,0.02) 100%);
+      border: 1px solid rgba(0,255,136,0.2);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .sched-hero-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+      animation: pulse-green 2s ease-in-out infinite;
+    }
+    .sched-hero-dot.live { background: #ef4444; animation: pulse-badge 1.5s ease-in-out infinite; }
+    .sched-hero-inner { flex: 1; min-width: 0; }
+    .sched-hero-label {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+    .sched-hero-label.live { color: #ef4444; }
+    .sched-hero-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+    .sched-hero-meta { font-family: var(--mono); font-size: 0.73rem; color: var(--muted); }
+
+    /* two-col layout */
+    .sched-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 32px;
+    }
+    @media (max-width: 900px) { .sched-grid { grid-template-columns: 1fr; } }
+
+    /* announcements */
+    .sched-announcements { }
+    .sched-section-label {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .sched-announce-empty { font-size: 0.82rem; color: var(--muted); font-style: italic; }
+    .sched-announce-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+    .sched-announce-item .a-time { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-top: 4px; }
+
+    /* timeline */
+    .sched-timeline-col { }
+    .sched-day-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .sched-day-nav-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 4px;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .sched-day-nav-btn:hover { border-color: var(--green); color: var(--green); }
+    .sched-day-nav-btn:disabled { opacity: 0.25; cursor: default; }
+    .sched-day-nav-label { font-family: var(--mono); font-size: 0.75rem; color: var(--text); flex: 1; }
+    .sched-day-nav-label span { color: var(--muted); font-size: 0.68rem; margin-left: 6px; }
+
+    .sched-tl { position: relative; padding-left: 22px; }
+    .sched-tl::before {
+      content: '';
+      position: absolute;
+      left: 5px; top: 10px; bottom: 10px;
+      width: 1px;
+      background: var(--border);
+    }
+    .sched-tl-item {
+      position: relative;
+      display: flex;
+      gap: 20px;
+      padding: 13px 0 13px 14px;
+      transition: opacity 0.2s;
+    }
+    .sched-tl-item::before {
+      content: '';
+      position: absolute;
+      left: -17px; top: 16px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .sched-tl-item.is-active::before {
+      background: var(--green);
+      border-color: var(--green);
+      box-shadow: 0 0 8px rgba(0,255,136,0.6);
+    }
+    .sched-tl-item.is-past { opacity: 0.38; }
+    .sched-tl-time {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+      min-width: 100px;
+      padding-top: 2px;
+      flex-shrink: 0;
+    }
+    .sched-tl-item.is-active .sched-tl-time { color: var(--green); }
+    .sched-tl-body { flex: 1; min-width: 0; }
+    .sched-tl-title { font-weight: 600; font-size: 1rem; margin-bottom: 2px; }
+    .sched-tl-item.is-active .sched-tl-title { color: var(--green); }
+    .sched-tl-title.highlight { color: var(--green); }
+    .sched-tl-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.55; margin-top: 4px; }
+    .sched-tl-loc { font-size: 0.74rem; color: var(--muted); margin-top: 4px; font-family: var(--mono); }
+
+    /* ── Challenge cards ── */
+    .challenge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+
+    .challenge-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .challenge-card:hover { border-color: rgba(0,255,136,0.3); transform: translateY(-2px); }
+
+    .challenge-card-img {
+      width: 100%; height: 140px; object-fit: cover;
+      background: rgba(0,255,136,0.05);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 2rem; color: rgba(0,255,136,0.3);
+    }
+
+    .challenge-card-body { padding: 16px; }
+    .challenge-card-sponsor { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--green); margin-bottom: 5px; }
+    .challenge-card-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; }
+    .challenge-card-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* ── Challenge detail ── */
+    .detail-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 680px) {
+      .detail-two-col { grid-template-columns: 1fr; }
+    }
+    .detail-section-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+    .detail-sponsor-strip {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+    .detail-sponsor-name {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--green);
+      font-weight: 700;
+    }
+    .detail-sponsor-bio {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.55;
+      flex: 1;
+    }
+    .challenge-detail-back { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.78rem; color: var(--muted); cursor: pointer; margin-bottom: 24px; transition: color 0.2s; background: none; border: none; padding: 0; }
+    .challenge-detail-back:hover { color: var(--green); }
+
+    /* ── Assignment card ── */
+    .assignment-banner {
+      background: rgba(0,255,136,0.04); border: 2px solid rgba(0,255,136,0.25);
+      border-radius: 14px; padding: 28px; margin-bottom: 20px;
+    }
+    .assignment-banner .a-title { font-size: 1.3rem; font-weight: 800; color: var(--green); margin-bottom: 4px; }
+    .assignment-banner .a-sponsor { font-size: 0.82rem; color: var(--muted); margin-bottom: 16px; }
+
+    /* ── Prio selects ── */
+    .prio-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .prio-row label { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); min-width: 46px; }
+    .prio-row select { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); font-family: var(--mono); font-size: 0.82rem; outline: none; }
+
+    /* ── Submission ── */
+    .submission-status { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: rgba(0,255,136,0.05); border: 1px solid rgba(0,255,136,0.2); border-radius: 10px; margin-bottom: 20px; font-size: 0.86rem; }
+
+    /* ── Welcome stats ── */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; margin-top: 20px; }
+    .stat-box { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+    .stat-val { font-family: var(--mono); font-size: 1.5rem; font-weight: 700; color: var(--green); }
+    .stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── Loading spinner ── */
+    .loading-text { color: var(--muted); font-family: var(--mono); font-size: 0.88rem; padding: 40px 0; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <canvas id="matrix"></canvas>
+  <div id="cursor-glow"></div>
+
+  <nav id="nav">
+    <div class="nav-inner">
+      <a class="nav-logo" href="index.html">
+        <svg width="18" height="18" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0">
+          <rect width="32" height="32" rx="6" fill="#00FF88"/>
+          <text x="50%" y="22" font-family="monospace" font-size="18" font-weight="bold" fill="#07070A" text-anchor="middle">§</text>
+        </svg>
+        legal_hackathon<span>@unisg</span>
+      </a>
+      <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Toggle menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <ul class="nav-links">
+        <li><a href="index.html#about">about</a></li>
+        <li><a href="index.html#howto">how_it_works</a></li>
+        <li><a href="index.html#schedule">schedule</a></li>
+        <li><a href="index.html#challenges">challenges</a></li>
+        <li><a href="index.html#prizes">prizes</a></li>
+        <li><a href="index.html#sponsors">sponsors</a></li>
+        <li><a href="index.html#partners">partners</a></li>
+        <li><a href="index.html#faq">faq</a></li>
+        <li><a href="teams.html">find_team()</a></li>
+        <li><a href="portal.html" class="nav-cta">portal()</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ══ AUTH VIEWS (pre-login) ══════════════════════════════════════════════ -->
+
+  <div id="view-auth">
+
+    <!-- Set Password -->
+    <div id="view-set-password" class="auth-wrap" style="display:none;">
+      <div class="auth-card">
+        <div class="page-tag">// activate account</div>
+        <h1>Set your password</h1>
+        <div id="msg-setpw" class="msg"></div>
+        <div class="form-group"><label>New Password</label><input type="password" id="pw-new" placeholder="At least 8 characters" autocomplete="new-password"></div>
+        <div class="form-group"><label>Confirm Password</label><input type="password" id="pw-confirm" placeholder="Repeat password" autocomplete="new-password"></div>
+        <button class="btn btn-primary btn-full" id="btn-setpw">Set Password &amp; Continue →</button>
+      </div>
+    </div>
+
+    <!-- Login -->
+    <div id="view-login" class="auth-wrap" style="display:none;">
+      <div class="auth-card">
+        <div class="page-tag">// participant portal</div>
+        <h1>Log in</h1>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;line-height:1.6;">Access your hackathon dashboard.</p>
+        <div id="msg-login" class="msg"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="you@student.unisg.ch" autocomplete="email"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="login-pw" placeholder="Your password" autocomplete="current-password"></div>
+        <button class="btn btn-primary btn-full" id="btn-login">Log In →</button>
+        <p style="text-align:center;margin-top:16px;font-size:0.8rem;color:var(--muted);">No account yet? <a href="register.html" style="color:var(--green);">Register first</a></p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ PORTAL SHELL (post-login) ══════════════════════════════════════════ -->
+
+  <div id="view-portal" style="display:none;">
+    <div class="portal-shell">
+
+      <!-- Sidebar -->
+      <aside class="portal-sidebar" id="portal-sidebar">
+        <div class="sidebar-label">Navigation</div>
+
+        <div class="sidebar-section">
+          <button class="sidebar-item" data-panel="home">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12L12 3l9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg>
+            Home
+          </button>
+
+          <button class="sidebar-item" data-panel="team">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            Team
+          </button>
+
+          <button class="sidebar-item" data-panel="schedule">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            Schedule
+          </button>
+
+          <button class="sidebar-item" data-panel="cases-overview">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V8l-5-5z"/><path d="M9 3v5h10"/></svg>
+            Cases
+          </button>
+          <div class="sidebar-sub">
+            <button class="sidebar-item" data-panel="cases-overview">Overview</button>
+            <button class="sidebar-item" data-panel="cases-preference">Case Preferences</button>
+          </div>
+
+          <button class="sidebar-item" data-panel="submission">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            Submission
+          </button>
+        </div>
+      </aside>
+
+      <!-- Mobile sidebar toggle -->
+      <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+
+      <!-- Main -->
+      <main class="portal-main">
+
+        <!-- ── Home ── -->
+        <div class="panel" id="panel-home">
+          <div class="page-header">
+            <div class="page-tag">// participant portal</div>
+            <div class="page-title" id="home-name">Welcome</div>
+            <div class="page-sub">Legal Hackathon @ UNISG — your event dashboard</div>
+          </div>
+
+          <div class="card" style="margin-bottom:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+              <div>
+                <div style="font-size:0.82rem;color:var(--muted);margin-bottom:4px;">Application Status</div>
+                <span id="home-badge" class="badge">—</span>
+              </div>
+              <button class="btn btn-outline" id="btn-logout">Log Out</button>
+            </div>
+            <div id="home-info"></div>
+          </div>
+
+          <div class="card">
+            <h2>Quick Actions</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;">
+              <button class="btn btn-outline" onclick="navigate('team')" style="display:flex;align-items:center;gap:8px;justify-content:center;">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                My Team
+              </button>
+              <button class="btn btn-outline" onclick="navigate('schedule')" style="display:flex;align-items:center;gap:8px;justify-content:center;">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                Schedule
+              </button>
+              <button class="btn btn-outline" onclick="navigate('cases-overview')" style="display:flex;align-items:center;gap:8px;justify-content:center;">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V8l-5-5z"/><path d="M9 3v5h10"/></svg>
+                Cases
+              </button>
+              <button class="btn btn-outline" onclick="navigate('submission')" style="display:flex;align-items:center;gap:8px;justify-content:center;">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Team ── -->
+        <div class="panel" id="panel-team">
+          <div class="page-header">
+            <div class="page-tag">// team</div>
+            <div class="page-title">My Team</div>
+          </div>
+
+          <div class="subtabs">
+            <button class="subtab active" data-subtab="team-my-team">my_team()</button>
+            <button class="subtab" data-subtab="team-profile">my_information()</button>
+          </div>
+
+          <!-- Sub: My Team -->
+          <div id="subtab-team-my-team">
+            <div id="msg-team" class="msg"></div>
+
+            <!-- Not confirmed -->
+            <div id="team-not-confirmed" style="display:none;" class="card">
+              <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;">Team features will be available once your application has been confirmed by the organizers.</p>
+            </div>
+
+            <!-- Has team -->
+            <div id="team-exists" style="display:none;">
+              <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                  <div>
+                    <div style="font-size:1.15rem;font-weight:800;" id="team-name">—</div>
+                    <div style="font-size:0.8rem;color:var(--muted);margin-top:2px;" id="team-size">—</div>
+                  </div>
+                  <span id="team-role-pill" class="role-pill">—</span>
+                </div>
+                <div style="font-size:0.8rem;color:var(--muted);margin-bottom:6px;">Invite Code — share with teammates</div>
+                <div class="invite-row">
+                  <span class="invite-code" id="team-invite-code">——————</span>
+                  <button class="copy-btn" id="btn-copy-code">copy</button>
+                </div>
+                <div id="member-list" style="margin-top:16px;"></div>
+              </div>
+              <button class="btn btn-danger" id="btn-leave-team">Leave Team</button>
+            </div>
+
+            <!-- No team -->
+            <div id="team-none" style="display:none;">
+              <div class="card">
+                <h2>Create a Team</h2>
+                <p style="color:var(--muted);font-size:0.87rem;margin-bottom:18px;line-height:1.6;">Create a team and share the invite code with your teammates.</p>
+                <div class="form-group">
+                  <label>Team Name</label>
+                  <input type="text" id="team-name-input" placeholder="e.g. LegalAI Sharks" maxlength="100">
+                </div>
+                <button class="btn btn-primary" id="btn-create-team">Create Team →</button>
+              </div>
+
+              <div class="card">
+                <h2>Join a Team</h2>
+                <p style="color:var(--muted);font-size:0.87rem;margin-bottom:18px;line-height:1.6;">Have a code from a teammate? Enter it below.</p>
+                <div class="form-group">
+                  <label>Invite Code</label>
+                  <input type="text" id="invite-code-input" placeholder="6-character code" maxlength="6" style="text-transform:uppercase;letter-spacing:3px;font-family:var(--mono);font-size:1rem;">
+                </div>
+                <button class="btn btn-primary" id="btn-join-team">Join Team →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub: My Information -->
+          <div id="subtab-team-profile" style="display:none;">
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <h2 style="margin:0;">Profile</h2>
+                <button class="btn btn-outline" id="btn-logout-profile">Log Out</button>
+              </div>
+              <div id="profile-info"></div>
+            </div>
+            <div class="card">
+              <h2>Update Discord Handle</h2>
+              <div id="msg-profile" class="msg"></div>
+              <div class="form-group">
+                <label>Discord Username <span style="color:var(--muted);font-weight:400;">(optional — shown on team board)</span></label>
+                <input type="text" id="profile-discord" placeholder="e.g. username" maxlength="100">
+              </div>
+              <button class="btn btn-primary" id="btn-save-profile">Save →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Schedule ── -->
+        <div class="panel" id="panel-schedule">
+          <!-- top bar -->
+          <div class="sched-topbar">
+            <div>
+              <div class="page-tag">// schedule</div>
+              <div class="page-title" style="margin-bottom:0">Event Schedule</div>
+            </div>
+            <div class="sched-topbar-date" id="sched-today-label"></div>
+          </div>
+
+          <div id="schedule-loading" class="loading-text">// loading schedule…</div>
+          <div id="schedule-empty" style="display:none;color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Schedule hasn't been published yet — check back soon.</div>
+
+          <!-- next up hero -->
+          <div id="sched-hero" style="display:none"></div>
+
+          <!-- two-col: announcements + timeline -->
+          <div class="sched-grid">
+            <div class="sched-announcements">
+              <div class="sched-section-label">// announcements</div>
+              <div id="sched-announce-list"><div class="sched-announce-empty">No announcements yet.</div></div>
+            </div>
+            <div class="sched-timeline-col">
+              <div class="sched-section-label">// timeline</div>
+              <div class="sched-day-nav" id="sched-day-nav" style="display:none">
+                <button class="sched-day-nav-btn" id="sched-prev">&#8249;</button>
+                <div class="sched-day-nav-label" id="sched-day-nav-label">Day 1</div>
+                <button class="sched-day-nav-btn" id="sched-next">&#8250;</button>
+              </div>
+              <div id="sched-tl-content"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Cases: Overview ── -->
+        <div class="panel" id="panel-cases-overview">
+          <div class="page-header">
+            <div class="page-tag">// cases</div>
+            <div class="page-title">Challenge Overview</div>
+            <div class="page-sub">Click a challenge to read the full description.</div>
+          </div>
+          <div id="cases-loading" class="loading-text">// loading challenges…</div>
+          <div id="cases-empty" style="display:none;" class="card">
+            <p style="color:var(--muted);font-size:0.9rem;">Challenges haven't been published yet — check back on the day of the event.</p>
+          </div>
+          <div class="challenge-grid" id="challenge-grid"></div>
+
+          <!-- Challenge detail (hidden until card click or assignment) -->
+          <div id="challenge-detail" style="display:none;">
+            <button class="challenge-detail-back" id="btn-back-to-cases">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+              <span id="btn-back-to-cases-label">Back to all cases</span>
+            </button>
+
+            <!-- Assigned case badge (only shown when viewing assigned case) -->
+            <div id="detail-assigned-badge" style="display:none;margin-bottom:16px;background:rgba(0,255,136,0.04);border:2px solid rgba(0,255,136,0.25);border-radius:12px;padding:14px 20px;display:none;">
+              <div class="page-tag" style="margin-bottom:2px;">// your assigned case</div>
+              <div id="detail-assigned-notes" style="display:none;margin-top:10px;background:rgba(255,200,0,0.06);border:1px solid rgba(255,200,0,0.2);border-radius:8px;padding:12px;font-size:0.87rem;line-height:1.6;"></div>
+            </div>
+
+            <!-- Full-width header -->
+            <div class="card" style="margin-bottom:16px;">
+              <div id="detail-sponsor-tag" class="challenge-card-sponsor" style="margin-bottom:6px;"></div>
+              <div style="font-size:1.7rem;font-weight:800;line-height:1.2;margin-bottom:10px;" id="detail-title"></div>
+              <div id="detail-sponsor-strip" class="detail-sponsor-strip" style="display:none;">
+                <div>
+                  <div class="detail-sponsor-name" id="detail-sponsor-name"></div>
+                  <div class="detail-sponsor-bio" id="detail-sponsor-desc"></div>
+                </div>
+              </div>
+              <div style="font-size:0.97rem;color:var(--muted);line-height:1.7;" id="detail-short-desc"></div>
+            </div>
+
+            <!-- Two-column: Description (left) + Deep Dive (right) -->
+            <div class="detail-two-col">
+              <div class="card" id="detail-desc-card" style="display:none;">
+                <div class="detail-section-label">// challenge description</div>
+                <div style="font-size:0.9rem;line-height:1.75;white-space:pre-wrap;" id="detail-desc"></div>
+              </div>
+              <div class="card" id="detail-deepdive-card" style="display:none;">
+                <div class="detail-section-label">// deep dive</div>
+                <div style="font-size:0.9rem;line-height:1.75;white-space:pre-wrap;" id="detail-deepdive"></div>
+              </div>
+            </div>
+
+            <!-- Full-width: Judging criteria -->
+            <div class="card" id="detail-judging-card" style="display:none;margin-bottom:16px;">
+              <div class="detail-section-label">// judging criteria</div>
+              <div style="font-size:0.9rem;line-height:1.75;white-space:pre-wrap;" id="detail-judging"></div>
+            </div>
+
+            <!-- Resources (only for assigned case) -->
+            <div id="detail-resources-card" style="display:none;" class="card">
+              <div class="detail-section-label">// resources</div>
+              <div style="font-size:0.88rem;line-height:1.7;white-space:pre-wrap;" id="detail-resources-text"></div>
+              <a id="detail-resources-file" href="#" target="_blank" style="display:none;margin-top:12px;color:var(--green);font-family:var(--mono);font-size:0.82rem;">↓ Download resource file</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Cases: Preference ── -->
+        <div class="panel" id="panel-cases-preference">
+          <div class="page-header">
+            <div class="page-tag">// case preferences</div>
+            <div class="page-title">Case Preferences</div>
+          </div>
+
+          <!-- Assignment: triggers navigate to cases-overview detail view -->
+          <div id="pref-assigned" style="display:none;"></div>
+
+          <!-- Preference form -->
+          <div id="pref-form-wrap">
+            <div id="msg-pref-no-team" class="card" style="display:none;">
+              <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;">You need to be in a team before you can submit case preferences. <button class="btn btn-outline" onclick="navigate('team')" style="margin-left:8px;padding:6px 14px;font-size:0.82rem;">Go to Team →</button></p>
+            </div>
+            <div id="msg-pref-not-owner" class="card" style="display:none;">
+              <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;">Your team owner will submit the case preferences on behalf of your team.</p>
+              <div id="pref-readonly-submitted" style="display:none;margin-top:12px;font-family:var(--mono);font-size:0.78rem;color:var(--green);">✓ Your team owner has already submitted preferences.</div>
+            </div>
+            <div id="pref-no-cases" class="card" style="display:none;">
+              <p style="color:var(--muted);font-size:0.9rem;">Cases haven't been published yet — check back on the day of the event.</p>
+            </div>
+            <div id="pref-deadline-passed" class="card" style="display:none;">
+              <p style="color:#ffc800;font-size:0.9rem;">⏰ The preference submission deadline has passed.</p>
+            </div>
+
+            <div id="pref-owner-form" style="display:none;">
+              <div class="card" style="margin-bottom:16px;">
+                <p style="color:var(--muted);font-size:0.87rem;line-height:1.6;margin-bottom:20px;">Rank your top 3 preferred cases. We'll use this to assign your team to a case — aiming for everyone's first choice.</p>
+                <div id="msg-pref" class="msg"></div>
+                <div id="pref-deadline-info" style="display:none;font-family:var(--mono);font-size:0.78rem;color:var(--muted);margin-bottom:16px;"></div>
+                <div class="prio-row"><label>Prio 1 <span style="color:var(--green);">*</span></label><select id="pref-prio1"><option value="">— select —</option></select></div>
+                <div class="prio-row"><label>Prio 2</label><select id="pref-prio2"><option value="">— optional —</option></select></div>
+                <div class="prio-row"><label>Prio 3</label><select id="pref-prio3"><option value="">— optional —</option></select></div>
+                <div id="pref-saved-note" style="display:none;font-family:var(--mono);font-size:0.78rem;color:var(--green);margin:12px 0;">✓ Preferences saved — you can update them until the deadline.</div>
+                <button class="btn btn-primary" id="btn-submit-prefs" style="margin-top:8px;">Submit Preferences →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Submission ── -->
+        <div class="panel" id="panel-submission">
+          <div class="page-header">
+            <div class="page-tag">// submission</div>
+            <div class="page-title">Project Submission</div>
+            <div class="page-sub">Submit your project deliverables before the deadline.</div>
+          </div>
+
+          <div id="submission-no-team" style="display:none;" class="card">
+            <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;">You need to be in a team to submit. <button class="btn btn-outline" onclick="navigate('team')" style="margin-left:8px;padding:6px 14px;font-size:0.82rem;">Go to Team →</button></p>
+          </div>
+
+          <div id="submission-form-wrap" style="display:none;">
+            <div id="submission-deadline-info" style="display:none; font-family:var(--mono); font-size:0.78rem; color:var(--muted); margin-bottom:16px;"></div>
+            <div id="submission-deadline-passed" style="display:none;" class="msg show-error" style="margin-bottom:16px;">⏰ The submission deadline has passed. No more changes can be saved.</div>
+            <div id="submission-saved" style="display:none;" class="submission-status">
+              <svg width="16" height="16" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Last saved: <span id="submission-saved-at">—</span></span>
+            </div>
+
+            <div class="card">
+              <h2>Links</h2>
+              <div id="msg-submission" class="msg"></div>
+              <div class="form-group">
+                <label>GitHub / GitLab Repository URL</label>
+                <input type="url" id="sub-repo" placeholder="https://github.com/your-team/project">
+              </div>
+              <div class="form-group">
+                <label>Demo / Video URL <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+                <input type="url" id="sub-demo" placeholder="https://...">
+              </div>
+            </div>
+
+            <div class="card">
+              <h2>Files</h2>
+              <div class="form-group">
+                <label>Pitch Deck <span style="color:var(--muted);font-weight:400;">(PDF, max 20 MB)</span></label>
+                <input type="file" id="sub-pitch" accept=".pdf">
+                <div id="sub-pitch-current" style="display:none;font-size:0.78rem;color:var(--green);font-family:var(--mono);margin-top:4px;">✓ Pitch deck already uploaded</div>
+              </div>
+              <div class="form-group">
+                <label>Additional File <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+                <input type="file" id="sub-extra">
+                <div id="sub-extra-current" style="display:none;font-size:0.78rem;color:var(--green);font-family:var(--mono);margin-top:4px;">✓ Additional file already uploaded</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h2>Notes for the Jury</h2>
+              <div class="form-group">
+                <textarea id="sub-notes" placeholder="Anything you'd like the jury to know — special setup instructions, known limitations, etc."></textarea>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" id="btn-submit" style="width:100%;">Save Submission →</button>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Loading splash -->
+  <div id="view-loading" class="auth-wrap">
+    <div style="color:var(--muted);font-family:var(--mono);">// loading…</div>
+  </div>
+
+  <script src="main.js"></script>
+  <script>
+    const BACKEND_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+      ? 'http://localhost/api'
+      : 'https://api.legalhackathons.org/api';
+    const params = new URLSearchParams(window.location.search);
+    const UID   = params.get('uid');
+    const TOKEN = params.get('token');
+
+    let ME = null;
+    let challengeCache = null;
+    let scheduleLoaded = false;
+    let submissionLoaded = false;
+    let prefLoaded = false;
+
+    // ── Utils ────────────────────────────────────────────────────────────────
+
+    function escHtml(s) {
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function getCsrf() {
+      return document.cookie.split(';').map(c=>c.trim())
+        .find(c=>c.startsWith('csrftoken='))?.split('=')[1] || '';
+    }
+
+    async function api(method, path, body) {
+      const opts = { method, credentials: 'include', headers: { 'X-CSRFToken': getCsrf() } };
+      if (body instanceof FormData) {
+        opts.body = body;
+      } else if (body) {
+        opts.headers['Content-Type'] = 'application/json';
+        opts.body = JSON.stringify(body);
+      }
+      const res = await fetch(`${BACKEND_URL}${path}`, opts);
+      let data;
+      try { data = await res.json(); } catch { data = {}; }
+      return { ok: res.ok, status: res.status, data };
+    }
+
+    function showMsg(id, text, type) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text;
+      el.className = `msg show-${type}`;
+    }
+
+    function clearMsg(id) {
+      const el = document.getElementById(id);
+      if (el) { el.className = 'msg'; el.textContent = ''; }
+    }
+
+    function formatDate(iso) {
+      if (!iso) return '—';
+      return new Date(iso).toLocaleString('en-CH', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    }
+
+    // ── Navigation ────────────────────────────────────────────────────────────
+
+    function navigate(panelId) {
+      // Hide all panels
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.getElementById(`panel-${panelId}`)?.classList.add('active');
+
+      // Update sidebar active state
+      document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll(`[data-panel="${panelId}"]`).forEach(b => b.classList.add('active'));
+
+      // Lazy-load data
+      if (panelId === 'schedule' && !scheduleLoaded) loadSchedule();
+      if (panelId === 'cases-overview') loadChallenges();
+      if (panelId === 'cases-preference' && !prefLoaded) { prefLoaded = true; loadChallengePreference(); }
+      if (panelId === 'submission' && !submissionLoaded) { submissionLoaded = true; loadSubmission(); }
+
+      // Close mobile sidebar
+      document.getElementById('portal-sidebar').classList.remove('open');
+    }
+
+    // Sidebar clicks
+    document.querySelectorAll('.sidebar-item[data-panel]').forEach(btn => {
+      btn.addEventListener('click', () => navigate(btn.dataset.panel));
+    });
+
+    // Mobile toggle
+    document.getElementById('sidebar-toggle').addEventListener('click', () => {
+      document.getElementById('portal-sidebar').classList.toggle('open');
+    });
+
+    // Sub-tabs
+    document.querySelectorAll('.subtab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.closest('.subtabs');
+        group.querySelectorAll('.subtab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const targetId = `subtab-${btn.dataset.subtab}`;
+        const panel = btn.closest('.panel');
+        panel.querySelectorAll('[id^="subtab-"]').forEach(el => {
+          el.style.display = el.id === targetId ? 'block' : 'none';
+        });
+      });
+    });
+
+    // ── Auth routing ──────────────────────────────────────────────────────────
+
+    function showView(name) {
+      document.getElementById('view-auth').style.display = 'none';
+      document.getElementById('view-portal').style.display = 'none';
+      document.getElementById('view-loading').style.display = 'none';
+      document.getElementById('view-set-password').style.display = 'none';
+      document.getElementById('view-login').style.display = 'none';
+
+      if (name === 'set-password') {
+        document.getElementById('view-auth').style.display = 'block';
+        document.getElementById('view-set-password').style.display = 'flex';
+      } else if (name === 'login') {
+        document.getElementById('view-auth').style.display = 'block';
+        document.getElementById('view-login').style.display = 'flex';
+      } else if (name === 'portal') {
+        document.getElementById('view-portal').style.display = 'block';
+      } else {
+        document.getElementById('view-loading').style.display = 'flex';
+      }
+    }
+
+    async function init() {
+      if (UID && TOKEN) { showView('set-password'); return; }
+      const { ok, data } = await api('GET', '/me/');
+      if (ok) {
+        ME = data;
+        renderPortal(data);
+        showView('portal');
+        navigate('home');
+      } else {
+        showView('login');
+      }
+    }
+
+    // ── Set Password ─────────────────────────────────────────────────────────
+
+    document.getElementById('btn-setpw').addEventListener('click', async () => {
+      const pw = document.getElementById('pw-new').value;
+      const confirm = document.getElementById('pw-confirm').value;
+      if (pw.length < 8) { showMsg('msg-setpw','Password must be at least 8 characters.','error'); return; }
+      if (pw !== confirm) { showMsg('msg-setpw','Passwords do not match.','error'); return; }
+      const btn = document.getElementById('btn-setpw');
+      btn.disabled = true; btn.textContent = '…';
+      const { ok, data } = await api('POST', '/auth/set-password/', { uid: UID, token: TOKEN, password: pw, confirm_password: confirm });
+      if (ok) {
+        showMsg('msg-setpw','✓ Password set! Loading your dashboard…','success');
+        history.replaceState({}, '', 'portal.html');
+        setTimeout(async () => {
+          const me = await api('GET', '/me/');
+          if (me.ok) { ME = me.data; renderPortal(me.data); showView('portal'); navigate('home'); }
+        }, 900);
+      } else {
+        showMsg('msg-setpw', data.error || 'Something went wrong.', 'error');
+        btn.disabled = false; btn.textContent = 'Set Password & Continue →';
+      }
+    });
+
+    // ── Login ─────────────────────────────────────────────────────────────────
+
+    document.getElementById('btn-login').addEventListener('click', async () => {
+      const email = document.getElementById('login-email').value.trim();
+      const pw    = document.getElementById('login-pw').value;
+      if (!email || !pw) { showMsg('msg-login','Please enter your email and password.','error'); return; }
+      const btn = document.getElementById('btn-login');
+      btn.disabled = true; btn.textContent = '…';
+      const { ok, data } = await api('POST', '/auth/login/', { email, password: pw });
+      if (ok) {
+        const me = await api('GET', '/me/');
+        if (me.ok) { ME = me.data; renderPortal(me.data); showView('portal'); navigate('home'); }
+      } else {
+        showMsg('msg-login', data.error || 'Login failed.', 'error');
+        btn.disabled = false; btn.textContent = 'Log In →';
+      }
+    });
+
+    document.getElementById('login-pw').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('btn-login').click();
+    });
+
+    // ── Logout ────────────────────────────────────────────────────────────────
+
+    async function logout() {
+      await api('POST', '/auth/logout/');
+      ME = null; showView('login');
+    }
+    document.getElementById('btn-logout').addEventListener('click', logout);
+    document.getElementById('btn-logout-profile').addEventListener('click', logout);
+
+    // ── Portal render ─────────────────────────────────────────────────────────
+
+    function renderPortal(me) {
+      // Home
+      document.getElementById('home-name').textContent = `Welcome, ${me.full_name.split(' ')[0]}`;
+      const badge = document.getElementById('home-badge');
+      badge.textContent = me.status;
+      badge.className = `badge badge-${me.status}`;
+
+      document.getElementById('home-info').innerHTML = `
+        <div class="info-row"><span class="key">Full Name</span><span class="val">${escHtml(me.full_name)}</span></div>
+        <div class="info-row"><span class="key">Email</span><span class="val">${escHtml(me.email)}</span></div>
+        <div class="info-row"><span class="key">University</span><span class="val">${escHtml(me.university)}</span></div>
+        <div class="info-row"><span class="key">Program</span><span class="val">${escHtml(me.study_program)}</span></div>
+        <div class="info-row"><span class="key">Skills</span><span class="val">${(me.knowledge_areas||[]).map(s=>`<span class="pill">${escHtml(s)}</span>`).join('')}</span></div>
+      `;
+
+      // Profile tab
+      document.getElementById('profile-info').innerHTML = `
+        <div class="info-row"><span class="key">Full Name</span><span class="val">${escHtml(me.full_name)}</span></div>
+        <div class="info-row"><span class="key">Email</span><span class="val">${escHtml(me.email)}</span></div>
+        <div class="info-row"><span class="key">University</span><span class="val">${escHtml(me.university)}</span></div>
+        <div class="info-row"><span class="key">Program</span><span class="val">${escHtml(me.study_program)}</span></div>
+        <div class="info-row"><span class="key">Year</span><span class="val">${escHtml(me.year_of_study||'—')}</span></div>
+        <div class="info-row"><span class="key">Team Preference</span><span class="val">${escHtml(me.team_preference)}</span></div>
+        <div class="info-row"><span class="key">Skills</span><span class="val">${(me.knowledge_areas||[]).map(s=>`<span class="pill">${escHtml(s)}</span>`).join('')}</span></div>
+        <div class="info-row"><span class="key">Status</span><span class="val"><span class="badge badge-${me.status}">${escHtml(me.status)}</span></span></div>
+      `;
+      document.getElementById('profile-discord').value = me.discord_handle || '';
+
+      // Team section
+      renderTeamSection(me);
+    }
+
+    function renderTeamSection(me) {
+      ['team-not-confirmed','team-exists','team-none'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+      });
+      if (me.status !== 'confirmed') {
+        document.getElementById('team-not-confirmed').style.display = 'block';
+        return;
+      }
+      if (me.team) {
+        renderTeam(me.team);
+      } else {
+        document.getElementById('team-none').style.display = 'block';
+      }
+    }
+
+    function renderTeam(team) {
+      document.getElementById('team-exists').style.display = 'block';
+      document.getElementById('team-name').textContent = team.name;
+      document.getElementById('team-size').textContent = `${team.members.length} / 4 members${team.is_full ? ' · FULL' : ''}`;
+      document.getElementById('team-invite-code').textContent = team.invite_code;
+      const rp = document.getElementById('team-role-pill');
+      rp.textContent = team.role;
+      rp.className = `role-pill ${team.role}`;
+
+      document.getElementById('member-list').innerHTML = team.members.map(m => `
+        <div class="member-item">
+          <div class="member-avatar">${escHtml((m.full_name||'?').charAt(0).toUpperCase())}</div>
+          <div>
+            <div class="member-name">${escHtml(m.full_name)}</div>
+            <div class="member-sub">${escHtml(m.study_program)}</div>
+            <div style="margin-top:3px;">${(m.knowledge_areas||[]).map(s=>`<span class="pill">${escHtml(s)}</span>`).join('')}</div>
+          </div>
+          <span class="role-pill ${m.role}">${m.role}</span>
+        </div>
+      `).join('');
+    }
+
+    // ── Copy invite code ──────────────────────────────────────────────────────
+
+    document.getElementById('btn-copy-code').addEventListener('click', () => {
+      navigator.clipboard.writeText(document.getElementById('team-invite-code').textContent).then(() => {
+        const btn = document.getElementById('btn-copy-code');
+        btn.textContent = 'copied!';
+        setTimeout(() => btn.textContent = 'copy', 2000);
+      });
+    });
+
+    // ── Create team ───────────────────────────────────────────────────────────
+
+    document.getElementById('btn-create-team').addEventListener('click', async () => {
+      const name = document.getElementById('team-name-input').value.trim();
+      if (!name) { showMsg('msg-team','Please enter a team name.','error'); return; }
+      const btn = document.getElementById('btn-create-team');
+      btn.disabled = true; btn.textContent = '…';
+      const { ok, data } = await api('POST', '/teams/create/', { name });
+      if (ok) {
+        const me = await api('GET', '/me/');
+        if (me.ok) { ME = me.data; renderTeamSection(me.data); clearMsg('msg-team'); }
+      } else {
+        showMsg('msg-team', data.error || 'Could not create team.', 'error');
+      }
+      btn.disabled = false; btn.textContent = 'Create Team →';
+    });
+
+    // ── Join team ─────────────────────────────────────────────────────────────
+
+    document.getElementById('btn-join-team').addEventListener('click', async () => {
+      const code = document.getElementById('invite-code-input').value.trim().toUpperCase();
+      if (code.length !== 6) { showMsg('msg-team','Please enter a valid 6-character invite code.','error'); return; }
+      const btn = document.getElementById('btn-join-team');
+      btn.disabled = true; btn.textContent = '…';
+      const { ok, data } = await api('POST', '/teams/join/', { invite_code: code });
+      if (ok) {
+        const me = await api('GET', '/me/');
+        if (me.ok) { ME = me.data; renderTeamSection(me.data); clearMsg('msg-team'); }
+      } else {
+        showMsg('msg-team', data.error || 'Could not join team.', 'error');
+      }
+      btn.disabled = false; btn.textContent = 'Join Team →';
+    });
+
+    document.getElementById('invite-code-input').addEventListener('input', e => {
+      e.target.value = e.target.value.toUpperCase();
+    });
+
+    // ── Leave team ────────────────────────────────────────────────────────────
+
+    document.getElementById('btn-leave-team').addEventListener('click', async () => {
+      if (!confirm('Leave your team? If you are the owner, ownership transfers to the next member. If you are the last member, the team will be deleted.')) return;
+      const { ok, data } = await api('DELETE', '/teams/mine/');
+      if (ok) {
+        const me = await api('GET', '/me/');
+        if (me.ok) { ME = me.data; renderTeamSection(me.data); }
+      } else {
+        alert(data.error || 'Could not leave team.');
+      }
+    });
+
+    // ── Profile save (discord handle) ─────────────────────────────────────────
+
+    document.getElementById('btn-save-profile').addEventListener('click', async () => {
+      const discord = document.getElementById('profile-discord').value.trim();
+      const btn = document.getElementById('btn-save-profile');
+      btn.disabled = true; btn.textContent = '…';
+      const fd = new FormData();
+      fd.append('discord_handle', discord);
+      const { ok, data } = await api('POST', '/me/update/', fd);
+      if (ok) {
+        showMsg('msg-profile','✓ Saved!','success');
+        if (ME) ME.discord_handle = discord;
+      } else {
+        showMsg('msg-profile', data.error || 'Could not save.', 'error');
+      }
+      btn.disabled = false; btn.textContent = 'Save →';
+    });
+
+    // ── Schedule ──────────────────────────────────────────────────────────────
+
+    async function loadSchedule() {
+      scheduleLoaded = true;
+
+      // Today label
+      document.getElementById('sched-today-label').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+      const res = await fetch(`${BACKEND_URL}/schedule/`);
+      const days = res.ok ? await res.json() : [];
+      document.getElementById('schedule-loading').style.display = 'none';
+      if (!days.length) { document.getElementById('schedule-empty').style.display = 'block'; return; }
+
+      // Flatten + compute live status
+      const now = new Date();
+      const allItems = [];
+      days.forEach(d => {
+        d.items.forEach(item => {
+          const baseDate = item.date_iso || null; // ISO format for Date parsing
+          const timeMatch = item.time_label ? item.time_label.match(/(\d{1,2}):(\d{2})/) : null;
+          let startDt = null, endDt = null;
+          if (baseDate && timeMatch) {
+            startDt = new Date(`${baseDate}T${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}:00`);
+            const endMatch = item.time_label.match(/[–\-](\d{1,2}):(\d{2})/);
+            endDt = endMatch
+              ? new Date(`${baseDate}T${endMatch[1].padStart(2,'0')}:${endMatch[2]}:00`)
+              : new Date(startDt.getTime() + 60 * 60 * 1000);
+          }
+          let status = 'upcoming';
+          if (startDt) {
+            if (now >= startDt && now < endDt) status = 'live';
+            else if (now >= endDt) status = 'past';
+          }
+          allItems.push({ ...item, day: d.day, startDt, endDt, status });
+        });
+      });
+
+      // Hero: live item or next upcoming
+      const featured = allItems.find(i => i.status === 'live') || allItems.find(i => i.status === 'upcoming');
+      const heroEl = document.getElementById('sched-hero');
+      if (featured) {
+        const isLive = featured.status === 'live';
+        heroEl.style.display = 'block';
+        heroEl.innerHTML = `
+          <div class="sched-hero">
+            <div class="sched-hero-dot${isLive ? ' live' : ''}"></div>
+            <div class="sched-hero-inner">
+              <div class="sched-hero-label${isLive ? ' live' : ''}">${isLive ? '● now live' : '// next up'}</div>
+              <div class="sched-hero-title">${escHtml(featured.title)}</div>
+              <div class="sched-hero-meta">${escHtml(featured.time_label)}${featured.location ? ` &nbsp;·&nbsp; ${escHtml(featured.location)}` : ''} &nbsp;·&nbsp; Day ${featured.day}</div>
+            </div>
+          </div>`;
+      }
+
+      // Announcements
+      const aRes = await fetch(`${BACKEND_URL}/announcements/`);
+      const announcements = aRes.ok ? await aRes.json() : [];
+      const announceEl = document.getElementById('sched-announce-list');
+      if (announcements.length) {
+        announceEl.innerHTML = announcements.map(a => `
+          <div class="sched-announce-item">
+            <div style="font-weight:600;font-size:0.88rem;margin-bottom:4px;">${escHtml(a.title)}</div>
+            ${a.body ? `<div style="font-size:0.82rem;color:var(--muted);line-height:1.55;">${escHtml(a.body)}</div>` : ''}
+            <div class="a-time">${escHtml(a.created_at)}</div>
+          </div>`).join('');
+      }
+
+      // Timeline with day navigation
+      let currentDayIdx = 0;
+      // Default to the day with a live/upcoming item
+      const activeDayNum = featured?.day;
+      if (activeDayNum) {
+        const idx = days.findIndex(d => d.day === activeDayNum);
+        if (idx >= 0) currentDayIdx = idx;
+      }
+
+      function renderDay(idx) {
+        const d = days[idx];
+        const navLabel = document.getElementById('sched-day-nav-label');
+        const dateStr = d.items[0]?.date || ''; // already human-readable from API
+        navLabel.innerHTML = `Day ${d.day}${dateStr ? `<span>${dateStr}</span>` : ''}`;
+        document.getElementById('sched-prev').disabled = idx === 0;
+        document.getElementById('sched-next').disabled = idx === days.length - 1;
+
+        document.getElementById('sched-tl-content').innerHTML = `
+          <div class="sched-tl">
+            ${d.items.map(item => {
+              const flat = allItems.find(i => i.title === item.title && i.day === d.day && i.time_label === item.time_label);
+              const status = flat?.status || 'upcoming';
+              const cls = status === 'live' ? 'is-active' : status === 'past' ? 'is-past' : '';
+              return `
+              <div class="sched-tl-item ${cls}">
+                <div class="sched-tl-time">${escHtml(item.time_label)}</div>
+                <div class="sched-tl-body">
+                  <div class="sched-tl-title${item.is_highlight ? ' highlight' : ''}">${escHtml(item.title)}</div>
+                  ${item.description ? `<div class="sched-tl-desc">${escHtml(item.description)}</div>` : ''}
+                  ${item.location ? `<div class="sched-tl-loc">↳ ${escHtml(item.location)}</div>` : ''}
+                </div>
+              </div>`;
+            }).join('')}
+          </div>`;
+      }
+
+      if (days.length > 0) {
+        document.getElementById('sched-day-nav').style.display = 'flex';
+        renderDay(currentDayIdx);
+        document.getElementById('sched-prev').addEventListener('click', () => {
+          if (currentDayIdx > 0) { currentDayIdx--; renderDay(currentDayIdx); }
+        });
+        document.getElementById('sched-next').addEventListener('click', () => {
+          if (currentDayIdx < days.length - 1) { currentDayIdx++; renderDay(currentDayIdx); }
+        });
+      }
+    }
+
+    // ── Challenges ────────────────────────────────────────────────────────────
+
+    async function loadChallenges() {
+      if (challengeCache !== null) {
+        renderChallengeGrid(challengeCache);
+        return;
+      }
+      const res = await fetch(`${BACKEND_URL}/challenges/`);
+      challengeCache = res.ok ? await res.json() : [];
+      document.getElementById('cases-loading').style.display = 'none';
+      renderChallengeGrid(challengeCache);
+    }
+
+    function renderChallengeGrid(challenges) {
+      const grid = document.getElementById('challenge-grid');
+      const empty = document.getElementById('cases-empty');
+      if (!challenges.length) { empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      grid.innerHTML = challenges.map(c => `
+        <div class="challenge-card" onclick="showChallengeDetail('${escHtml(String(c.id))}', {})">
+          <div class="challenge-card-img">§</div>
+          <div class="challenge-card-body">
+            ${c.sponsor ? `<div class="challenge-card-sponsor">${escHtml(c.sponsor)}</div>` : ''}
+            <div class="challenge-card-title">${escHtml(c.title)}</div>
+            <div class="challenge-card-desc">${escHtml(c.short_description || c.description)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    let detailBackTarget = 'grid'; // 'grid' or 'preference'
+
+    function showChallengeDetail(id, opts) {
+      // opts: { fromAssignment, assignmentData }
+      const c = (challengeCache||[]).find(x => String(x.id) === id);
+      if (!c && !opts?.assignmentData) return;
+      const data = c || {};
+      const a = opts?.assignmentData || {};
+
+      navigate('cases-overview');
+      document.getElementById('challenge-grid').style.display = 'none';
+      document.getElementById('cases-empty').style.display = 'none';
+      document.getElementById('cases-loading').style.display = 'none';
+      document.getElementById('challenge-detail').style.display = 'block';
+
+      // Back button — hidden when viewing assigned case (no preferences to return to)
+      detailBackTarget = 'grid';
+      const backBtn = document.getElementById('btn-back-to-cases');
+      if (opts?.fromAssignment) {
+        backBtn.style.display = 'none';
+      } else {
+        backBtn.style.display = 'flex';
+        document.getElementById('btn-back-to-cases-label').textContent = 'Back to all cases';
+      }
+
+      // Assigned badge
+      const badge = document.getElementById('detail-assigned-badge');
+      if (opts?.fromAssignment) {
+        badge.style.display = 'block';
+        const notesEl = document.getElementById('detail-assigned-notes');
+        if (a.notes) { notesEl.textContent = `📌 ${a.notes}`; notesEl.style.display = 'block'; }
+        else { notesEl.style.display = 'none'; }
+      } else {
+        badge.style.display = 'none';
+      }
+
+      // Header
+      document.getElementById('detail-sponsor-tag').textContent = (c?.sponsor || a.challenge_sponsor) || '';
+      document.getElementById('detail-title').textContent = c?.title || a.challenge_title || '';
+      document.getElementById('detail-short-desc').textContent = c?.short_description || a.challenge_short_description || '';
+
+      // Sponsor strip
+      const strip = document.getElementById('detail-sponsor-strip');
+      const sponsorDesc = c?.sponsor_description || a.challenge_sponsor_description;
+      if (sponsorDesc) {
+        document.getElementById('detail-sponsor-name').textContent = c?.sponsor || a.challenge_sponsor || '';
+        document.getElementById('detail-sponsor-desc').textContent = sponsorDesc;
+        strip.style.display = 'flex';
+      } else { strip.style.display = 'none'; }
+
+      // Description (left col)
+      const desc = c?.description || a.challenge_description;
+      const descCard = document.getElementById('detail-desc-card');
+      if (desc) { document.getElementById('detail-desc').textContent = desc; descCard.style.display = 'block'; }
+      else { descCard.style.display = 'none'; }
+
+      // Deep dive (right col)
+      const dd = c?.deep_dive || a.challenge_deep_dive;
+      const ddCard = document.getElementById('detail-deepdive-card');
+      if (dd) { document.getElementById('detail-deepdive').textContent = dd; ddCard.style.display = 'block'; }
+      else { ddCard.style.display = 'none'; }
+
+      // Judging (full width)
+      const jc = c?.judging_criteria || a.challenge_judging_criteria;
+      const jCard = document.getElementById('detail-judging-card');
+      if (jc) { document.getElementById('detail-judging').textContent = jc; jCard.style.display = 'block'; }
+      else { jCard.style.display = 'none'; }
+
+      // Resources (only for assigned case)
+      const resCard = document.getElementById('detail-resources-card');
+      if (a.resources_text || a.resource_file_url) {
+        document.getElementById('detail-resources-text').textContent = a.resources_text || '';
+        const fileLink = document.getElementById('detail-resources-file');
+        if (a.resource_file_url) { fileLink.href = a.resource_file_url; fileLink.style.display = 'block'; }
+        else { fileLink.style.display = 'none'; }
+        resCard.style.display = 'block';
+      } else { resCard.style.display = 'none'; }
+    }
+
+    document.getElementById('btn-back-to-cases').addEventListener('click', () => {
+      document.getElementById('challenge-detail').style.display = 'none';
+      document.getElementById('detail-assigned-badge').style.display = 'none';
+      document.getElementById('detail-resources-card').style.display = 'none';
+      if (detailBackTarget === 'preference') {
+        navigate('cases-preference');
+      } else {
+        document.getElementById('challenge-grid').style.display = 'grid';
+      }
+    });
+
+    // ── Case Preferences ──────────────────────────────────────────────────────
+
+    async function loadChallengePreference() {
+      // Check assignment first
+      const asgnRes = await api('GET', '/challenges/assignment/');
+      if (asgnRes.ok && asgnRes.data.assignment) {
+        renderAssignment(asgnRes.data.assignment);
+        return;
+      }
+
+      const challenges = challengeCache || await (async () => {
+        const r = await fetch(`${BACKEND_URL}/challenges/`);
+        const d = r.ok ? await r.json() : [];
+        challengeCache = d;
+        return d;
+      })();
+
+      if (!challenges.length) {
+        document.getElementById('pref-no-cases').style.display = 'block';
+        return;
+      }
+
+      const me = ME;
+      const inTeam = me?.team;
+      const isOwner = me?.team?.role === 'owner';
+      // Deadline is global — same value on every challenge object
+      const deadlinePassed = challenges.length > 0 && challenges[0].deadline_passed;
+
+      if (!inTeam) {
+        document.getElementById('msg-pref-no-team').style.display = 'block';
+        return;
+      }
+
+      if (!isOwner) {
+        document.getElementById('msg-pref-not-owner').style.display = 'block';
+        // Check if owner already submitted
+        const pr = await api('GET', '/challenges/preference/');
+        if (pr.ok && pr.data.preference) {
+          document.getElementById('pref-readonly-submitted').style.display = 'block';
+        }
+        return;
+      }
+
+      if (deadlinePassed) {
+        document.getElementById('pref-deadline-passed').style.display = 'block';
+      }
+
+      // Show deadline info (global, from first challenge)
+      const deadline = challenges[0]?.preference_deadline;
+      if (deadline) {
+        const info = document.getElementById('pref-deadline-info');
+        info.textContent = `Deadline: ${formatDate(deadline)}`;
+        info.style.display = 'block';
+      }
+
+      // Populate prio selects
+      const opts = challenges.map(c => `<option value="${escHtml(String(c.id))}">${escHtml(c.title)}</option>`).join('');
+      const selects = [
+        { id: 'pref-prio1', placeholder: '— select —' },
+        { id: 'pref-prio2', placeholder: '— optional —' },
+        { id: 'pref-prio3', placeholder: '— optional —' },
+      ];
+
+      selects.forEach(s => {
+        document.getElementById(s.id).innerHTML = `<option value="">${s.placeholder}</option>` + opts;
+      });
+
+      function syncPrioSelects() {
+        const vals = selects.map(s => document.getElementById(s.id).value);
+        selects.forEach((s, i) => {
+          const sel = document.getElementById(s.id);
+          const current = sel.value;
+          const taken = vals.filter((v, j) => v && j !== i);
+          Array.from(sel.options).forEach(opt => {
+            if (opt.value) opt.disabled = taken.includes(opt.value);
+          });
+          // If current value was just disabled by another select, keep it selected but mark it
+          sel.value = current;
+        });
+      }
+
+      selects.forEach(s => {
+        document.getElementById(s.id).addEventListener('change', syncPrioSelects);
+      });
+
+      // Load existing
+      const pr = await api('GET', '/challenges/preference/');
+      if (pr.ok && pr.data.preference) {
+        const p = pr.data.preference;
+        if (p.prio1) document.getElementById('pref-prio1').value = p.prio1;
+        if (p.prio2) document.getElementById('pref-prio2').value = p.prio2;
+        if (p.prio3) document.getElementById('pref-prio3').value = p.prio3;
+        syncPrioSelects();
+        document.getElementById('pref-saved-note').style.display = 'block';
+      }
+
+      document.getElementById('pref-owner-form').style.display = 'block';
+      if (deadlinePassed) document.getElementById('btn-submit-prefs').disabled = true;
+    }
+
+    function renderAssignment(a) {
+      // Render using the same detail view as Cases Overview
+      showChallengeDetail(a.challenge_id, { fromAssignment: true, assignmentData: a });
+    }
+
+    document.getElementById('btn-submit-prefs').addEventListener('click', async () => {
+      const prio1 = document.getElementById('pref-prio1').value;
+      const prio2 = document.getElementById('pref-prio2').value;
+      const prio3 = document.getElementById('pref-prio3').value;
+      if (!prio1) { showMsg('msg-pref','Please select at least Prio 1.','error'); return; }
+      const choices = [prio1,prio2,prio3].filter(Boolean);
+      if (new Set(choices).size !== choices.length) { showMsg('msg-pref','Each priority must be a different challenge.','error'); return; }
+      const btn = document.getElementById('btn-submit-prefs');
+      btn.disabled = true; btn.textContent = '…';
+      const { ok, data } = await api('POST', '/challenges/preference/', { prio1, prio2: prio2||null, prio3: prio3||null });
+      if (ok) {
+        showMsg('msg-pref','✓ Preferences saved!','success');
+        document.getElementById('pref-saved-note').style.display = 'block';
+      } else {
+        showMsg('msg-pref', data.error || 'Could not save.', 'error');
+      }
+      btn.disabled = false; btn.textContent = 'Submit Preferences →';
+    });
+
+    // ── Submission ────────────────────────────────────────────────────────────
+
+    async function loadSubmission() {
+      const { ok, data } = await api('GET', '/submission/');
+      if (!ok) return;
+      if (!data.in_team) {
+        document.getElementById('submission-no-team').style.display = 'block';
+        return;
+      }
+      document.getElementById('submission-form-wrap').style.display = 'block';
+      if (data.deadline) {
+        const info = document.getElementById('submission-deadline-info');
+        info.textContent = `Submission deadline: ${formatDate(data.deadline)}`;
+        info.style.display = 'block';
+      }
+      if (data.deadline_passed) {
+        document.getElementById('submission-deadline-passed').style.display = 'block';
+        document.getElementById('btn-submit').disabled = true;
+      }
+      if (data.submission) {
+        const s = data.submission;
+        if (s.repo_url) document.getElementById('sub-repo').value = s.repo_url;
+        if (s.demo_url) document.getElementById('sub-demo').value = s.demo_url;
+        if (s.notes) document.getElementById('sub-notes').value = s.notes;
+        if (s.has_pitch_deck) document.getElementById('sub-pitch-current').style.display = 'block';
+        if (s.has_additional_file) document.getElementById('sub-extra-current').style.display = 'block';
+        const savedEl = document.getElementById('submission-saved');
+        savedEl.style.display = 'flex';
+        document.getElementById('submission-saved-at').textContent = formatDate(s.submitted_at);
+      }
+    }
+
+    document.getElementById('btn-submit').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-submit');
+      btn.disabled = true; btn.textContent = '…';
+      clearMsg('msg-submission');
+
+      const fd = new FormData();
+      fd.append('repo_url', document.getElementById('sub-repo').value.trim());
+      fd.append('demo_url', document.getElementById('sub-demo').value.trim());
+      fd.append('notes', document.getElementById('sub-notes').value.trim());
+      const pitch = document.getElementById('sub-pitch').files[0];
+      const extra = document.getElementById('sub-extra').files[0];
+      if (pitch) fd.append('pitch_deck', pitch);
+      if (extra) fd.append('additional_file', extra);
+
+      const { ok, data } = await api('POST', '/submission/', fd);
+      if (ok) {
+        showMsg('msg-submission','✓ Submission saved!','success');
+        const savedEl = document.getElementById('submission-saved');
+        savedEl.style.display = 'flex';
+        document.getElementById('submission-saved-at').textContent = formatDate(new Date().toISOString());
+        if (pitch) document.getElementById('sub-pitch-current').style.display = 'block';
+        if (extra) document.getElementById('sub-extra-current').style.display = 'block';
+      } else {
+        showMsg('msg-submission', data.error || 'Could not save submission.', 'error');
+      }
+      btn.disabled = false; btn.textContent = 'Save Submission →';
+    });
+
+    // ── Profile update endpoint needs to be added ─────────────────────────────
+    // (wired up as POST /me/update/ — added below in views)
+
+    // ── Start ─────────────────────────────────────────────────────────────────
+    fetch(`${BACKEND_URL}/csrf/`, { credentials: 'include' }).finally(init);
+  </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>You're on the Waitlist</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #07070A; color: #E8E8EC; font-family: 'Segoe UI', Arial, sans-serif; }
+    .wrapper { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+    .logo { font-family: monospace; font-size: 22px; color: #00FF88; letter-spacing: 2px; }
+    .badge { display: inline-block; background: #ffc800; color: #07070A; font-weight: bold; font-size: 12px; padding: 4px 12px; border-radius: 100px; margin-top: 8px; letter-spacing: 1px; }
+    h1 { font-size: 26px; margin: 24px 0 8px; }
+    .card { background: #111118; border: 1px solid #1E1E2E; border-radius: 12px; padding: 24px; margin: 24px 0; }
+    .card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #ffc800; margin-bottom: 12px; font-family: monospace; }
+    p { color: #A0A0B0; line-height: 1.7; margin-bottom: 12px; }
+    .footer { text-align: center; color: #555566; font-size: 12px; margin-top: 48px; line-height: 1.8; }
+    .footer a { color: #00FF88; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div style="text-align:center; margin-bottom:32px;">
+      <div class="logo">// LEGAL HACKATHON</div>
+      <div class="badge">WAITLIST</div>
+    </div>
+    <h1>You're on the waitlist, {{ name }}.</h1>
+    <p>Thank you for your interest in the Legal Hackathon @ UNISG! All spots are currently taken, but we've added you to our waitlist.</p>
+    <div class="card">
+      <div class="card-title">// what happens next</div>
+      <p>We will email you immediately if a spot opens up. Registrations sometimes get cancelled, so there's a real chance you'll make it in!</p>
+      <p>In the meantime, stay tuned on our website and watch for updates.</p>
+    </div>
+    <div class="footer">
+      <p>Questions? <a href="mailto:legal-hackathon@unisg.ch">legal-hackathon@unisg.ch</a></p>
+      <p style="margin-top:8px;"><a href="https://www.legalhackathons.org">legalhackathons.org</a></p>
+      <p style="margin-top:16px; color:#333344;">© 2026 Legal Hackathon @ UNISG</p>
+    </div>
+  </div>
+</body>
+</html>

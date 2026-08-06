@@ -1,0 +1,9 @@
+Hi {{ name }},
+
+Thank you for applying to the Legal Hackathon @ UNISG!
+
+We have received your application and will review it shortly. You will hear from us within a few days.
+
+Questions? Email us at legal-hackathon@unisg.ch
+
+The Legal Hackathon Team

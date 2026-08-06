@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration Confirmed</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #07070A; color: #E8E8EC; font-family: 'Segoe UI', Arial, sans-serif; }
+    .wrapper { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+    .header { text-align: center; margin-bottom: 40px; }
+    .logo { font-family: monospace; font-size: 22px; color: #00FF88; letter-spacing: 2px; }
+    .badge { display: inline-block; background: #00FF88; color: #07070A; font-weight: bold; font-size: 12px; padding: 4px 12px; border-radius: 100px; margin-top: 8px; letter-spacing: 1px; }
+    h1 { font-size: 28px; color: #E8E8EC; margin: 24px 0 8px; }
+    .subtitle { color: #A0A0B0; font-size: 15px; }
+    .card { background: #111118; border: 1px solid #1E1E2E; border-radius: 12px; padding: 24px; margin: 24px 0; }
+    .card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #00FF88; margin-bottom: 16px; font-family: monospace; }
+    .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1E1E2E; font-size: 14px; }
+    .row:last-child { border-bottom: none; }
+    .row .label { color: #A0A0B0; }
+    .row .value { color: #E8E8EC; font-weight: 500; text-align: right; }
+    .qr-section { text-align: center; margin: 32px 0; }
+    .qr-section img { width: 160px; height: 160px; border: 3px solid #00FF88; border-radius: 8px; padding: 8px; background: #07070A; }
+    .qr-label { color: #A0A0B0; font-size: 13px; margin-top: 12px; font-family: monospace; }
+    .cta { display: block; background: #00FF88; color: #07070A; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; padding: 14px 32px; border-radius: 8px; margin: 24px 0; }
+    .footer { text-align: center; color: #555566; font-size: 12px; margin-top: 48px; line-height: 1.8; }
+    .footer a { color: #00FF88; text-decoration: none; }
+    .event-box { background: #0A0A12; border-left: 3px solid #00FF88; padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; font-family: monospace; font-size: 14px; }
+    .event-box .key { color: #00FF88; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <div class="logo">// LEGAL HACKATHON</div>
+      <div class="badge">REGISTRATION CONFIRMED</div>
+    </div>
+
+    <h1>You're in, {{ name }}! 🎉</h1>
+    <p class="subtitle">Your spot at the Legal Hackathon @ UNISG is secured.</p>
+
+    <div class="card">
+      <div class="card-title">// your registration</div>
+      <div class="row"><span class="label">Name</span><span class="value">{{ name }}</span></div>
+      <div class="row"><span class="label">Email</span><span class="value">{{ email }}</span></div>
+      <div class="row"><span class="label">University</span><span class="value">{{ university }}</span></div>
+      <div class="row"><span class="label">Team Preference</span><span class="value">{{ team_preference }}</span></div>
+    </div>
+
+    <div class="event-box">
+      <span class="key">event:</span> Nov 7–8, 2026<br>
+      <span class="key">venue:</span> Rosenbergstrasse 30, St. Gallen<br>
+      <span class="key">start:</span> 10:00 AM
+    </div>
+
+    <div class="qr-section">
+      <p style="color:#A0A0B0; font-size:13px; margin-bottom:16px; font-family:monospace;">// your check-in QR code</p>
+      <img src="data:image/png;base64,{{ qr_b64 }}" alt="Check-in QR Code">
+      <p class="qr-label">Show this at the event entrance</p>
+    </div>
+
+    <a href="{{ checkin_url }}" class="cta">Open Check-in QR Code</a>
+
+    <p style="color:#A0A0B0; font-size:13px; text-align:center; margin-top:-8px;">
+      Save this email — you'll need it to check in on event day.
+    </p>
+
+    <div class="footer">
+      <p>Questions? <a href="mailto:legal-hackathon@unisg.ch">legal-hackathon@unisg.ch</a></p>
+      <p style="margin-top:8px;">
+        <a href="https://www.legalhackathons.org">legalhackathons.org</a> ·
+        <a href="https://www.legalhackathons.org/privacy-policy.html">Privacy</a>
+      </p>
+      <p style="margin-top:16px; color:#333344;">© 2026 Legal Hackathon @ UNISG</p>
+    </div>
+  </div>
+</body>
+</html>

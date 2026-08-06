@@ -4,6 +4,22 @@
 
 /* ── Boot Sequence ── */
 (function () {
+  const el = document.getElementById('boot-text');
+  if (!el) return;
+
+  const bootEl = document.getElementById('boot');
+
+  function skipBoot() {
+    bootEl.classList.add('done');
+    setTimeout(() => bootEl.remove(), 600);
+  }
+
+  // Only show once per browser session
+  if (sessionStorage.getItem('boot_done')) {
+    skipBoot();
+    return;
+  }
+
   const lines = [
     '> initializing legal_hackathon.exe...',
     '> loading modules: [AI, LLM, NLP, Legal]',
@@ -14,14 +30,13 @@
     '> ready. welcome, hacker.',
     '',
   ];
-  const el = document.getElementById('boot-text');
   let li = 0, ci = 0;
 
   function type() {
     if (li >= lines.length) {
       setTimeout(() => {
-        document.getElementById('boot').classList.add('done');
-        setTimeout(() => document.getElementById('boot').remove(), 600);
+        sessionStorage.setItem('boot_done', '1');
+        skipBoot();
       }, 300);
       return;
     }
@@ -74,6 +89,7 @@
 /* ── Cursor Glow ── */
 document.addEventListener('mousemove', e => {
   const g = document.getElementById('cursor-glow');
+  if (!g) return;
   g.style.left = e.clientX + 'px';
   g.style.top = e.clientY + 'px';
 });
@@ -117,25 +133,28 @@ document.addEventListener('mousemove', e => {
 })();
 
 /* ── Countdown Timer ── */
-const countdownTarget = new Date('2026-11-07T10:00:00+01:00');
-
-function tick() {
-  const n = new Date();
-  const d = countdownTarget - n;
-  if (d <= 0) return;
-  document.getElementById('cd-d').textContent = String(Math.floor(d / 864e5)).padStart(2, '0');
-  document.getElementById('cd-h').textContent = String(Math.floor(d % 864e5 / 36e5)).padStart(2, '0');
-  document.getElementById('cd-m').textContent = String(Math.floor(d % 36e5 / 6e4)).padStart(2, '0');
-  document.getElementById('cd-s').textContent = String(Math.floor(d % 6e4 / 1e3)).padStart(2, '0');
-}
-tick();
-setInterval(tick, 1000);
+(function () {
+  const cdD = document.getElementById('cd-d');
+  if (!cdD) return;
+  const countdownTarget = new Date('2026-11-07T10:00:00+01:00');
+  function tick() {
+    const d = countdownTarget - new Date();
+    if (d <= 0) return;
+    cdD.textContent = String(Math.floor(d / 864e5)).padStart(2, '0');
+    document.getElementById('cd-h').textContent = String(Math.floor(d % 864e5 / 36e5)).padStart(2, '0');
+    document.getElementById('cd-m').textContent = String(Math.floor(d % 36e5 / 6e4)).padStart(2, '0');
+    document.getElementById('cd-s').textContent = String(Math.floor(d % 6e4 / 1e3)).padStart(2, '0');
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
 
 /* ── Typing Effect ── */
 (function () {
+  const el = document.getElementById('typed-text');
+  if (!el) return;
   const words = ['law', 'future', 'code', 'justice'];
   let wi = 0, ci = 0, del = false;
-  const el = document.getElementById('typed-text');
 
   function type() {
     const w = words[wi];
@@ -207,7 +226,7 @@ if (mapContainer) mapObs.observe(mapContainer);
 
 /* ── Nav Scroll Effect ── */
 window.addEventListener('scroll', () => {
-  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50);
+  document.getElementById('nav')?.classList.toggle('scrolled', window.scrollY > 50);
 });
 
 /* ── FAQ Accordion ── */

@@ -1,0 +1,11 @@
+Hi {{ name }},
+
+Thank you for registering for the Legal Hackathon @ UNISG!
+
+Unfortunately all {{ max_spots }} spots are currently taken. You have been added to our waitlist.
+
+We will notify you immediately if a spot becomes available. Registrations sometimes open up, so there's a good chance you'll make it in!
+
+Questions? Email us at legal-hackathon@unisg.ch
+
+The Legal Hackathon Team

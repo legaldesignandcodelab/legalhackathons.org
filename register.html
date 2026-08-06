@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Register — Legal Hackathon @ UNISG</title>
+  <meta name="description" content="Register for the Legal Hackathon @ UNISG — November 7–8, 2026.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── Registration page styles ── */
+    .reg-page {
+      min-height: 100vh;
+      padding: 120px 20px 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .reg-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .reg-header .tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--green);
+      border: 1px solid var(--green);
+      padding: 4px 14px;
+      border-radius: 100px;
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+    }
+
+    .reg-header h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .reg-header h1 span { color: var(--green); }
+
+    .reg-header p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .reg-form-wrap {
+      width: 100%;
+      max-width: 680px;
+    }
+
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .form-section-title {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--green);
+      margin: 32px 0 16px;
+    }
+
+    .form-section-title:first-child { margin-top: 0; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .form-group label .req { color: var(--green); margin-left: 2px; }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 0.92rem;
+      transition: border-color 0.2s;
+      outline: none;
+      width: 100%;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--green);
+    }
+
+    .form-group select option { background: #0f0f1a; }
+
+    .form-group input[type="file"] {
+      padding: 8px 12px;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .form-group input[type="file"]::file-selector-button {
+      background: var(--green);
+      color: #07070A;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 12px;
+      font-size: 0.8rem;
+    }
+
+    /* Checkboxes / radios */
+    .check-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      font-size: 0.88rem;
+    }
+
+    .check-item:hover { border-color: var(--green); background: rgba(0,255,136,0.05); }
+
+    .check-item input[type="checkbox"],
+    .check-item input[type="radio"] {
+      accent-color: var(--green);
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .radio-stack { display: flex; flex-direction: column; gap: 8px; }
+
+    .form-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--green);
+      color: #07070A;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      font-family: var(--sans);
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      margin-top: 8px;
+    }
+
+    .submit-btn:hover { opacity: 0.92; transform: translateY(-1px); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .form-note {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+
+    .form-note a { color: var(--green); }
+
+    /* Success / error states */
+    .form-message {
+      display: none;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .form-message.success {
+      display: block;
+      background: rgba(0,255,136,0.08);
+      border: 1px solid var(--green);
+      color: var(--green);
+    }
+
+    .form-message.error {
+      display: block;
+      background: rgba(255,80,80,0.08);
+      border: 1px solid #ff5050;
+      color: #ff7070;
+    }
+
+    .field-error {
+      font-size: 0.78rem;
+      color: #ff7070;
+      margin-top: 2px;
+    }
+
+    @media (max-width: 640px) {
+      .form-card { padding: 24px 20px; }
+      .form-row { grid-template-columns: 1fr; }
+      .check-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="matrix"></canvas>
+  <div id="cursor-glow"></div>
+  <div class="parallax-layer" id="parallax"></div>
+
+  <!-- Navigation -->
+  <nav id="nav">
+    <div class="nav-inner">
+      <a class="nav-logo" href="index.html">
+        <svg width="18" height="18" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true" style="flex-shrink:0">
+          <rect width="32" height="32" rx="6" fill="#00FF88" />
+          <text x="50%" y="22" font-family="monospace" font-size="18" font-weight="bold" fill="#07070A"
+            text-anchor="middle">§</text>
+        </svg>
+        legal_hackathon<span>@unisg</span>
+      </a>
+      <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')"
+        aria-label="Toggle menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12h18M3 6h18M3 18h18" />
+        </svg>
+      </button>
+      <ul class="nav-links">
+        <li><a href="index.html#about">about</a></li>
+        <li><a href="index.html#howto">how_it_works</a></li>
+        <li><a href="index.html#schedule">schedule</a></li>
+        <li><a href="index.html#challenges">challenges</a></li>
+        <li><a href="index.html#prizes">prizes</a></li>
+        <li><a href="index.html#sponsors">sponsors</a></li>
+        <li><a href="index.html#partners">partners</a></li>
+        <li><a href="index.html#faq">faq</a></li>
+        <li><a href="teams.html">find_team()</a></li>
+        <li><a href="portal.html" class="nav-cta">portal()</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="reg-page">
+    <div class="reg-header">
+      <span class="tag">// join us</span>
+      <h1>Register for the<br><span>Legal Hackathon</span></h1>
+      <p>Secure your spot at the first Legal Hackathon @ UNISG — November 7–8, 2026 in St. Gallen.</p>
+      <div id="spots-bar" style="margin-top:20px; display:none;">
+        <div style="font-family:var(--mono); font-size:0.78rem; color:var(--muted); margin-bottom:6px;">
+          <span id="spots-left" style="color:var(--green); font-weight:700;">—</span> / <span id="spots-max">100</span> spots remaining
+        </div>
+        <div style="height:4px; background:rgba(255,255,255,0.08); border-radius:4px; overflow:hidden;">
+          <div id="spots-bar-fill" style="height:100%; background:var(--green); border-radius:4px; transition:width 0.6s ease; width:0%;"></div>
+        </div>
+      </div>
+      <div id="reg-closed-msg" style="display:none; margin-top:16px; background:rgba(255,80,80,0.1); border:1px solid #ff5050; border-radius:10px; padding:14px 20px; color:#ff7070; font-size:0.9rem;">
+        Registrations are currently closed. Check back soon or email us at <a href="mailto:legal-hackathon@unisg.ch" style="color:#ff9090;">legal-hackathon@unisg.ch</a>.
+      </div>
+    </div>
+
+    <div class="reg-form-wrap">
+      <div id="form-message" class="form-message" role="alert"></div>
+
+      <div class="form-card">
+        <form id="reg-form" novalidate>
+
+          <!-- Personal Info -->
+          <div class="form-section-title">// personal info</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="full_name">Full Name <span class="req">*</span></label>
+              <input type="text" id="full_name" name="full_name" placeholder="Jane Doe" required autocomplete="name">
+              <span class="field-error" id="err-full_name"></span>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address <span class="req">*</span></label>
+              <input type="email" id="email" name="email" placeholder="jane@unisg.ch" required autocomplete="email">
+              <span class="field-error" id="err-email"></span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="university">University / Affiliation <span class="req">*</span></label>
+              <select id="university" name="university" required>
+                <option value="">Select…</option>
+                <option value="hsg">HSG – University of St. Gallen</option>
+                <option value="other_swiss">Other Swiss University</option>
+                <option value="international">International University</option>
+                <option value="professional">Professional (not studying)</option>
+                <option value="other">Other</option>
+              </select>
+              <span class="field-error" id="err-university"></span>
+            </div>
+            <div class="form-group">
+              <label for="year_of_study">Year of Study <span class="req">*</span></label>
+              <select id="year_of_study" name="year_of_study" required>
+                <option value="">Select…</option>
+                <option value="bachelor_1">Bachelor Year 1</option>
+                <option value="bachelor_2">Bachelor Year 2</option>
+                <option value="bachelor_3">Bachelor Year 3</option>
+                <option value="master_1">Master Year 1</option>
+                <option value="master_2">Master Year 2</option>
+                <option value="phd">PhD</option>
+                <option value="professional">Professional</option>
+                <option value="other">Other</option>
+              </select>
+              <span class="field-error" id="err-year_of_study"></span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="study_program">Study Program <span class="req">*</span></label>
+            <input type="text" id="study_program" name="study_program" placeholder="e.g. Law, Computer Science, Business Administration" required>
+            <span class="field-error" id="err-study_program"></span>
+          </div>
+
+          <hr class="form-divider">
+
+          <!-- Skills -->
+          <div class="form-section-title">// knowledge areas</div>
+          <div class="form-group">
+            <label>What do you bring to the team? <span class="req">*</span> (select all that apply)</label>
+            <div class="check-grid" id="knowledge_areas">
+              <label class="check-item"><input type="checkbox" name="knowledge_areas" value="AI & ML"> AI &amp; ML</label>
+              <label class="check-item"><input type="checkbox" name="knowledge_areas" value="Software Dev"> Software Dev</label>
+              <label class="check-item"><input type="checkbox" name="knowledge_areas" value="Data"> Data</label>
+              <label class="check-item"><input type="checkbox" name="knowledge_areas" value="Design & UX"> Design &amp; UX</label>
+              <label class="check-item"><input type="checkbox" name="knowledge_areas" value="Law"> Law</label>
+              <label class="check-item"><input type="checkbox" name="knowledge_areas" value="Project Mgmt"> Project Mgmt</label>
+              <label class="check-item"><input type="checkbox" name="knowledge_areas" value="Other"> Other</label>
+            </div>
+            <span class="field-error" id="err-knowledge_areas"></span>
+          </div>
+
+          <hr class="form-divider">
+
+          <!-- Team -->
+          <div class="form-section-title">// team preference</div>
+          <div class="form-group">
+            <label>How are you joining? <span class="req">*</span></label>
+            <div class="radio-stack" id="team_preference">
+              <label class="check-item"><input type="radio" name="team_preference" value="solo_open" required> Solo — open to team matching</label>
+              <label class="check-item"><input type="radio" name="team_preference" value="solo_find"> Solo — I'll find my own team</label>
+              <label class="check-item"><input type="radio" name="team_preference" value="team_partial"> Part of a team (2–3 people, looking for more)</label>
+              <label class="check-item"><input type="radio" name="team_preference" value="team_full"> Full team of 4</label>
+            </div>
+            <span class="field-error" id="err-team_preference"></span>
+          </div>
+
+          <hr class="form-divider">
+
+          <!-- Logistics -->
+          <div class="form-section-title">// logistics</div>
+          <div class="form-group">
+            <label>Dietary Restrictions (select all that apply)</label>
+            <div class="check-grid">
+              <label class="check-item"><input type="checkbox" name="dietary_restrictions" value="None"> None</label>
+              <label class="check-item"><input type="checkbox" name="dietary_restrictions" value="Vegetarian"> Vegetarian</label>
+              <label class="check-item"><input type="checkbox" name="dietary_restrictions" value="Vegan"> Vegan</label>
+              <label class="check-item"><input type="checkbox" name="dietary_restrictions" value="Gluten-free"> Gluten-free</label>
+              <label class="check-item"><input type="checkbox" name="dietary_restrictions" value="Halal"> Halal</label>
+              <label class="check-item"><input type="checkbox" name="dietary_restrictions" value="Nut allergy"> Nut allergy</label>
+              <label class="check-item"><input type="checkbox" name="dietary_restrictions" value="Other"> Other</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Photo &amp; Video Consent <span class="req">*</span></label>
+            <p style="font-size:0.8rem; color:var(--muted); margin-bottom:8px;">We may photograph/film the event for promotional purposes.</p>
+            <div class="radio-stack">
+              <label class="check-item"><input type="radio" name="photo_consent" value="true" required> Yes, I consent</label>
+              <label class="check-item"><input type="radio" name="photo_consent" value="false"> No, I do not consent</label>
+            </div>
+            <span class="field-error" id="err-photo_consent"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="how_did_you_hear">How did you hear about us?</label>
+            <select id="how_did_you_hear" name="how_did_you_hear">
+              <option value="">Select… (optional)</option>
+              <option value="email">Email</option>
+              <option value="social">Social Media</option>
+              <option value="word_of_mouth">Word of Mouth</option>
+              <option value="professor">Professor / Lecturer</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="discord_handle">Discord Username <span style="color:var(--muted);font-weight:400;">(optional — shown on team board so others can reach you)</span></label>
+            <input type="text" id="discord_handle" name="discord_handle" placeholder="e.g. username or username#1234" maxlength="100">
+            <span class="field-error" id="err-discord_handle"></span>
+          </div>
+
+          <hr class="form-divider">
+
+          <!-- CV -->
+          <div class="form-section-title">// cv upload (optional)</div>
+          <div class="form-group">
+            <label for="cv">Upload your CV (PDF, max 5 MB)</label>
+            <input type="file" id="cv" name="cv" accept=".pdf">
+            <span class="field-error" id="err-cv"></span>
+          </div>
+
+          <hr class="form-divider">
+
+          <!-- Legal -->
+          <div class="form-section-title">// terms</div>
+          <div class="form-group">
+            <label class="check-item" style="align-items:flex-start; gap:12px;">
+              <input type="checkbox" name="code_of_conduct" id="code_of_conduct" required style="margin-top:2px; flex-shrink:0;">
+              <span style="font-size:0.87rem; line-height:1.5;">
+                I have read and agree to the <a href="terms.html" target="_blank" style="color:var(--green);">Code of Conduct &amp; Terms</a>
+                and the <a href="privacy-policy.html" target="_blank" style="color:var(--green);">Privacy Policy</a>. <span class="req">*</span>
+              </span>
+            </label>
+            <span class="field-error" id="err-code_of_conduct"></span>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submit-btn">
+            Register Now →
+          </button>
+
+          <p class="form-note">
+            100 spots available — registrations close October 31, 2026.<br>
+            Questions? <a href="mailto:legal-hackathon@unisg.ch">legal-hackathon@unisg.ch</a>
+          </p>
+
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <p class="footer-logo">[LegalHack]</p>
+      <nav class="footer-links">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms.html">Terms</a>
+        <a href="mailto:legal-hackathon@unisg.ch">Contact</a>
+      </nav>
+      <p class="footer-copy">© 2026 Legal Hackathon @ UNISG · All rights reserved</p>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    // ── Backend URL — change this when deploying ──
+    const BACKEND_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+      ? 'http://localhost/api'
+      : 'https://api.legalhackathons.org/api';
+
+    // ── CSRF helper ──
+    function getCsrf() {
+      return document.cookie.split(';').map(c => c.trim())
+        .find(c => c.startsWith('csrftoken='))?.split('=')[1] || '';
+    }
+
+    // Fetch CSRF cookie on page load
+    fetch(`${BACKEND_URL}/csrf/`, { credentials: 'include' });
+
+    // ── Load spots status ──
+    (async function loadStatus() {
+      try {
+        const res = await fetch(`${BACKEND_URL}/status/`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const bar = document.getElementById('spots-bar');
+        bar.style.display = 'block';
+        document.getElementById('spots-left').textContent = data.spots_left;
+        document.getElementById('spots-max').textContent = data.max_spots;
+        const pct = Math.max(0, Math.min(100, (data.spots_left / data.max_spots) * 100));
+        document.getElementById('spots-bar-fill').style.width = pct + '%';
+        if (data.spots_left === 0) {
+          document.getElementById('spots-left').style.color = '#ffc800';
+        }
+        if (!data.registration_open) {
+          document.getElementById('reg-closed-msg').style.display = 'block';
+          document.getElementById('reg-form').style.display = 'none';
+        }
+      } catch (_) { /* silently skip if backend unreachable */ }
+    })();
+
+    const form = document.getElementById('reg-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const messageBox = document.getElementById('form-message');
+
+    function showMessage(text, type) {
+      messageBox.textContent = text;
+      messageBox.className = `form-message ${type}`;
+      messageBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+    }
+
+    function showFieldErrors(errors) {
+      for (const [field, messages] of Object.entries(errors)) {
+        const el = document.getElementById(`err-${field}`);
+        if (el) el.textContent = Array.isArray(messages) ? messages.join(' ') : messages;
+      }
+    }
+
+    function validate() {
+      clearErrors();
+      let valid = true;
+
+      const required = ['full_name', 'email', 'university', 'study_program', 'year_of_study'];
+      for (const name of required) {
+        const el = document.getElementById(name) || document.querySelector(`[name="${name}"]`);
+        if (!el || !el.value.trim()) {
+          const errEl = document.getElementById(`err-${name}`);
+          if (errEl) errEl.textContent = 'This field is required.';
+          valid = false;
+        }
+      }
+
+      const areas = [...document.querySelectorAll('[name="knowledge_areas"]:checked')];
+      if (!areas.length) {
+        document.getElementById('err-knowledge_areas').textContent = 'Select at least one knowledge area.';
+        valid = false;
+      }
+
+      const team = document.querySelector('[name="team_preference"]:checked');
+      if (!team) {
+        document.getElementById('err-team_preference').textContent = 'Please select your team preference.';
+        valid = false;
+      }
+
+      const photo = document.querySelector('[name="photo_consent"]:checked');
+      if (!photo) {
+        document.getElementById('err-photo_consent').textContent = 'Please indicate your photo consent.';
+        valid = false;
+      }
+
+      const coc = document.getElementById('code_of_conduct');
+      if (!coc.checked) {
+        document.getElementById('err-code_of_conduct').textContent = 'You must accept the Code of Conduct.';
+        valid = false;
+      }
+
+      const cv = document.getElementById('cv');
+      if (cv.files[0]) {
+        if (!cv.files[0].name.toLowerCase().endsWith('.pdf')) {
+          document.getElementById('err-cv').textContent = 'Only PDF files are accepted.';
+          valid = false;
+        } else if (cv.files[0].size > 5 * 1024 * 1024) {
+          document.getElementById('err-cv').textContent = 'CV must be under 5 MB.';
+          valid = false;
+        }
+      }
+
+      return valid;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!validate()) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+      messageBox.className = 'form-message';
+
+      const data = new FormData();
+      data.append('full_name', document.getElementById('full_name').value.trim());
+      data.append('email', document.getElementById('email').value.trim());
+      data.append('university', document.getElementById('university').value);
+      data.append('study_program', document.getElementById('study_program').value.trim());
+      data.append('year_of_study', document.getElementById('year_of_study').value);
+
+      const areas = [...document.querySelectorAll('[name="knowledge_areas"]:checked')].map(el => el.value);
+      data.append('knowledge_areas', JSON.stringify(areas));
+
+      data.append('team_preference', document.querySelector('[name="team_preference"]:checked').value);
+
+      const dietary = [...document.querySelectorAll('[name="dietary_restrictions"]:checked')].map(el => el.value);
+      data.append('dietary_restrictions', JSON.stringify(dietary.length ? dietary : ['None']));
+
+      data.append('photo_consent', document.querySelector('[name="photo_consent"]:checked').value);
+      data.append('code_of_conduct', 'true');
+
+      const howEl = document.getElementById('how_did_you_hear');
+      if (howEl.value) data.append('how_did_you_hear', howEl.value);
+
+      const cv = document.getElementById('cv');
+      if (cv.files[0]) data.append('cv', cv.files[0]);
+
+      const discord = document.getElementById('discord_handle').value.trim();
+      if (discord) data.append('discord_handle', discord);
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/register/`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'X-CSRFToken': getCsrf() },
+          body: data,
+        });
+        const json = await res.json();
+
+        if (res.ok) {
+          form.style.display = 'none';
+          showMessage('🎉 ' + json.message, 'success');
+        } else {
+          let genericErrors = [];
+          if (json.errors) {
+            showFieldErrors(json.errors);
+            // Collect errors that have no matching field element
+            for (const [field, msgs] of Object.entries(json.errors)) {
+              const el = document.getElementById(`err-${field}`);
+              if (!el) genericErrors.push(Array.isArray(msgs) ? msgs.join(' ') : msgs);
+            }
+          }
+          const msg = genericErrors.length
+            ? genericErrors.join(' ')
+            : 'Please fix the errors above and try again.';
+          showMessage(msg, 'error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Register Now →';
+        }
+      } catch (err) {
+        showMessage('Could not reach the server. Please try again or email us at legal-hackathon@unisg.ch.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Register Now →';
+      }
+    });
+  </script>
+</body>
+</html>

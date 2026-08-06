@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Check-in — Legal Hackathon @ UNISG</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- jsQR: pure JS QR code reader, no dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <style>
+    .checkin-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .checkin-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .checkin-title {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--green);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .checkin-card h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 24px;
+    }
+
+    /* Gate */
+    #login-gate { display: block; }
+    #checkin-ui { display: none; }
+
+    .gate-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .input-row input {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-row input:focus { border-color: var(--green); }
+
+    .btn-primary {
+      background: var(--green);
+      color: #07070A;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-family: var(--sans);
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--green);
+      border: 1px solid var(--green);
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      font-family: var(--sans);
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-outline:hover { background: rgba(0,255,136,0.08); }
+    .btn-outline.active { background: rgba(0,255,136,0.15); }
+
+    .error-text {
+      color: #ff7070;
+      font-size: 0.8rem;
+      min-height: 18px;
+    }
+
+    /* Scanner */
+    #scanner-area {
+      display: none;
+      margin: 16px 0;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid var(--green);
+      background: #000;
+    }
+
+    #scanner-video {
+      width: 100%;
+      display: block;
+      border-radius: 10px;
+    }
+
+    #scanner-canvas { display: none; }
+
+    .scanner-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .scanner-line {
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: scan 2s linear infinite;
+      top: 20%;
+    }
+
+    @keyframes scan {
+      0%   { top: 20%; }
+      50%  { top: 75%; }
+      100% { top: 20%; }
+    }
+
+    .scanner-corner {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-color: var(--green);
+      border-style: solid;
+    }
+
+    .scanner-corner.tl { top: 8%; left: 8%; border-width: 3px 0 0 3px; }
+    .scanner-corner.tr { top: 8%; right: 8%; border-width: 3px 3px 0 0; }
+    .scanner-corner.bl { bottom: 8%; left: 8%; border-width: 0 0 3px 3px; }
+    .scanner-corner.br { bottom: 8%; right: 8%; border-width: 0 3px 3px 0; }
+
+    #scanner-status {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 8px;
+      font-family: var(--mono);
+    }
+
+    /* Divider */
+    .or-divider {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin: 16px 0;
+      position: relative;
+    }
+
+    .or-divider::before, .or-divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .or-divider::before { left: 0; }
+    .or-divider::after { right: 0; }
+
+    /* Result */
+    #result { display: none; }
+
+    .result-status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .result-status.ok  { background: rgba(0,255,136,0.1); border: 1px solid var(--green); color: var(--green); }
+    .result-status.warn { background: rgba(255,200,0,0.1); border: 1px solid #ffc800; color: #ffc800; }
+    .result-status.err  { background: rgba(255,80,80,0.1); border: 1px solid #ff5050; color: #ff7070; }
+
+    .result-icon { font-size: 1.8rem; }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.87rem;
+    }
+
+    .info-row:last-child { border-bottom: none; }
+    .info-row .key { color: var(--muted); }
+    .info-row .val { color: var(--text); font-weight: 500; text-align: right; max-width: 62%; }
+
+    .tag-pill {
+      display: inline-block;
+      background: rgba(0,255,136,0.12);
+      color: var(--green);
+      border-radius: 100px;
+      padding: 2px 10px;
+      font-size: 0.76rem;
+      font-family: var(--mono);
+      margin: 2px;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      font-family: var(--sans);
+      width: 100%;
+      margin-top: 16px;
+      transition: border-color 0.2s;
+    }
+
+    .btn-secondary:hover { border-color: var(--green); }
+
+    @media (max-width: 480px) {
+      .checkin-card { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="matrix"></canvas>
+  <div id="cursor-glow"></div>
+
+  <main class="checkin-page">
+    <div class="checkin-card">
+
+      <!-- Password gate -->
+      <div id="login-gate">
+        <div class="checkin-title">// organizer access</div>
+        <h1>Check-in</h1>
+        <p class="gate-label">This page is for event organizers only. Enter the check-in password to continue.</p>
+        <div class="input-row">
+          <input type="password" id="gate-pw" placeholder="Password" autocomplete="current-password">
+          <button class="btn-primary" id="gate-btn">Enter</button>
+        </div>
+        <div class="error-text" id="gate-err"></div>
+      </div>
+
+      <!-- Check-in UI -->
+      <div id="checkin-ui">
+        <div class="checkin-title">// event check-in</div>
+        <h1>Scan QR Code</h1>
+
+        <!-- Camera scanner -->
+        <button class="btn-outline" id="scan-btn" style="width:100%; margin-bottom:4px;">📷 Open Camera Scanner</button>
+
+        <div id="scanner-area">
+          <video id="scanner-video" playsinline autoplay muted></video>
+          <canvas id="scanner-canvas"></canvas>
+          <div class="scanner-overlay">
+            <div class="scanner-line"></div>
+            <div class="scanner-corner tl"></div>
+            <div class="scanner-corner tr"></div>
+            <div class="scanner-corner bl"></div>
+            <div class="scanner-corner br"></div>
+          </div>
+        </div>
+        <div id="scanner-status"></div>
+
+        <div class="or-divider">or enter token manually</div>
+
+        <!-- Manual token input -->
+        <div id="token-input-row">
+          <div class="input-row">
+            <input type="text" id="token-input" placeholder="Paste UUID token…" autocomplete="off" spellcheck="false">
+            <button class="btn-primary" id="checkin-btn">Check In</button>
+          </div>
+          <div class="error-text" id="token-err"></div>
+        </div>
+
+        <!-- Result -->
+        <div id="result">
+          <div id="result-status" class="result-status">
+            <span class="result-icon" id="result-icon"></span>
+            <span id="result-text"></span>
+          </div>
+          <div id="result-details"></div>
+          <button class="btn-secondary" id="next-btn">← Scan Next Participant</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="main.js"></script>
+  <script>
+    const BACKEND_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+      ? 'http://localhost/api'
+      : 'https://api.legalhackathons.org/api';
+    const CHECKIN_PASSWORD = 'hackathon2026';
+
+    // ── Password gate ──
+    const loginGate  = document.getElementById('login-gate');
+    const checkinUI  = document.getElementById('checkin-ui');
+    const gatePw     = document.getElementById('gate-pw');
+    const gateBtn    = document.getElementById('gate-btn');
+    const gateErr    = document.getElementById('gate-err');
+
+    const urlToken = new URLSearchParams(window.location.search).get('token');
+
+    function unlock() {
+      sessionStorage.setItem('checkin_auth', '1');
+      loginGate.style.display = 'none';
+      checkinUI.style.display = 'block';
+      if (urlToken) doCheckIn(urlToken);
+    }
+
+    if (sessionStorage.getItem('checkin_auth')) unlock();
+
+    gateBtn.addEventListener('click', () => {
+      if (gatePw.value === CHECKIN_PASSWORD) {
+        unlock();
+      } else {
+        gateErr.textContent = 'Incorrect password.';
+        gatePw.value = '';
+        gatePw.focus();
+      }
+    });
+
+    gatePw.addEventListener('keydown', e => { if (e.key === 'Enter') gateBtn.click(); });
+
+    // ── QR Camera Scanner ──
+    const scanBtn      = document.getElementById('scan-btn');
+    const scannerArea  = document.getElementById('scanner-area');
+    const scannerVideo = document.getElementById('scanner-video');
+    const scannerCanvas = document.getElementById('scanner-canvas');
+    const scannerStatus = document.getElementById('scanner-status');
+    let scannerStream  = null;
+    let scannerActive  = false;
+    let animFrame      = null;
+    let lastScanned    = null;
+
+    scanBtn.addEventListener('click', () => {
+      if (scannerActive) {
+        stopScanner();
+      } else {
+        startScanner();
+      }
+    });
+
+    async function startScanner() {
+      try {
+        scannerStatus.textContent = 'Requesting camera access…';
+        const constraints = {
+          video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } }
+        };
+        scannerStream = await navigator.mediaDevices.getUserMedia(constraints);
+        scannerVideo.srcObject = scannerStream;
+        await scannerVideo.play();
+        scannerArea.style.display = 'block';
+        scanBtn.textContent = '⛔ Stop Camera';
+        scanBtn.classList.add('active');
+        scannerStatus.textContent = '// scanning — point at QR code';
+        scannerActive = true;
+        lastScanned = null;
+        requestAnimationFrame(scanFrame);
+      } catch (err) {
+        scannerStatus.textContent = 'Camera access denied. Use manual input below.';
+      }
+    }
+
+    function stopScanner() {
+      scannerActive = false;
+      if (animFrame) cancelAnimationFrame(animFrame);
+      if (scannerStream) scannerStream.getTracks().forEach(t => t.stop());
+      scannerVideo.srcObject = null;
+      scannerArea.style.display = 'none';
+      scanBtn.textContent = '📷 Open Camera Scanner';
+      scanBtn.classList.remove('active');
+      scannerStatus.textContent = '';
+    }
+
+    function scanFrame() {
+      if (!scannerActive) return;
+      if (scannerVideo.readyState === scannerVideo.HAVE_ENOUGH_DATA) {
+        const ctx = scannerCanvas.getContext('2d');
+        scannerCanvas.width  = scannerVideo.videoWidth;
+        scannerCanvas.height = scannerVideo.videoHeight;
+        ctx.drawImage(scannerVideo, 0, 0);
+        const imageData = ctx.getImageData(0, 0, scannerCanvas.width, scannerCanvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
+        if (code && code.data && code.data !== lastScanned) {
+          lastScanned = code.data;
+          // Extract UUID from URL or use raw value
+          const token = extractToken(code.data);
+          if (token) {
+            stopScanner();
+            document.getElementById('token-input').value = token;
+            doCheckIn(token);
+            return;
+          }
+        }
+      }
+      animFrame = requestAnimationFrame(scanFrame);
+    }
+
+    function extractToken(raw) {
+      // Accepts full URL (https://…/checkin.html?token=UUID) or bare UUID
+      try {
+        const url = new URL(raw);
+        const t = url.searchParams.get('token');
+        if (t) return t;
+      } catch (_) {}
+      // UUID regex
+      const m = raw.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+      return m ? m[0] : null;
+    }
+
+    // ── Manual check-in ──
+    const tokenInput  = document.getElementById('token-input');
+    const checkinBtn  = document.getElementById('checkin-btn');
+    const tokenErr    = document.getElementById('token-err');
+    const result      = document.getElementById('result');
+    const resultStatus = document.getElementById('result-status');
+    const resultIcon  = document.getElementById('result-icon');
+    const resultText  = document.getElementById('result-text');
+    const resultDetails = document.getElementById('result-details');
+    const nextBtn     = document.getElementById('next-btn');
+
+    checkinBtn.addEventListener('click', () => {
+      const raw = tokenInput.value.trim();
+      if (!raw) { tokenErr.textContent = 'Please enter a token.'; return; }
+      const token = extractToken(raw) || raw;
+      doCheckIn(token);
+    });
+
+    tokenInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkinBtn.click(); });
+
+    nextBtn.addEventListener('click', () => {
+      result.style.display = 'none';
+      document.getElementById('token-input-row').style.display = 'block';
+      checkinBtn.disabled = false;
+      checkinBtn.textContent = 'Check In';
+      tokenInput.value = '';
+      tokenErr.textContent = '';
+      history.replaceState({}, '', window.location.pathname);
+      tokenInput.focus();
+    });
+
+    async function doCheckIn(token) {
+      tokenErr.textContent = '';
+      checkinBtn.disabled = true;
+      checkinBtn.textContent = '…';
+      document.getElementById('token-input-row').style.display = 'none';
+      result.style.display = 'none';
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/checkin/${encodeURIComponent(token)}/`);
+        const data = await res.json();
+        result.style.display = 'block';
+
+        if (res.ok) {
+          if (data.already_checked_in) {
+            resultStatus.className = 'result-status warn';
+            resultIcon.textContent = '⚠️';
+            resultText.textContent = 'Already checked in!';
+          } else {
+            resultStatus.className = 'result-status ok';
+            resultIcon.textContent = '✅';
+            resultText.textContent = 'Checked in successfully!';
+          }
+
+          const dietary = data.dietary_restrictions?.length
+            ? data.dietary_restrictions.map(d => `<span class="tag-pill">${escHtml(d)}</span>`).join('')
+            : '<span class="tag-pill">None</span>';
+
+          resultDetails.innerHTML = `
+            <div class="info-row"><span class="key">Name</span><span class="val">${escHtml(data.full_name)}</span></div>
+            <div class="info-row"><span class="key">Email</span><span class="val">${escHtml(data.email)}</span></div>
+            <div class="info-row"><span class="key">University</span><span class="val">${escHtml(data.university)}</span></div>
+            <div class="info-row"><span class="key">Team</span><span class="val">${escHtml(data.team_preference)}</span></div>
+            <div class="info-row"><span class="key">Dietary</span><span class="val">${dietary}</span></div>
+            <div class="info-row"><span class="key">Photo consent</span><span class="val">${data.photo_consent ? 'Yes' : 'No'}</span></div>
+            <div class="info-row"><span class="key">Status</span><span class="val">${escHtml(data.status)}</span></div>
+          `;
+        } else {
+          resultStatus.className = 'result-status err';
+          resultIcon.textContent = '❌';
+          resultText.textContent = data.error || 'Unknown error.';
+          resultDetails.innerHTML = '';
+        }
+      } catch {
+        result.style.display = 'block';
+        resultStatus.className = 'result-status err';
+        resultIcon.textContent = '❌';
+        resultText.textContent = 'Could not reach server. Check your connection.';
+        resultDetails.innerHTML = '';
+      }
+    }
+
+    function escHtml(str) {
+      return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+  </script>
+</body>
+</html>

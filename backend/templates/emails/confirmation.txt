@@ -1,0 +1,22 @@
+Hi {{ name }},
+
+Your registration for the Legal Hackathon @ UNISG is confirmed!
+
+Details:
+  Name:            {{ name }}
+  Email:           {{ email }}
+  University:      {{ university }}
+  Team preference: {{ team_preference }}
+
+EVENT: November 7–8, 2026 · Rosenbergstrasse 30, St. Gallen
+
+CHECK-IN QR CODE
+On the day of the event, open this link (or scan the QR code in the HTML version of this email):
+{{ checkin_url }}
+
+We'll be in touch with more details closer to the event. Join our Discord to stay updated!
+
+Questions? Email us at legal-hackathon@unisg.ch
+
+See you there!
+The Legal Hackathon Team

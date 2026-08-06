@@ -1,0 +1,117 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div style="max-width: 1100px;">
+
+  <!-- Stats row -->
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px;">
+
+    <div style="background: var(--color-bg-secondary, #f9fafb); border: 1px solid var(--color-border, #e5e7eb); border-radius: 12px; padding: 24px; text-align: center;">
+      <div style="font-size: 48px; font-weight: 700; color: var(--color-primary-600, #2563eb);">{{ total }}</div>
+      <div style="font-size: 14px; color: var(--color-text-muted, #6b7280); margin-top: 4px;">Confirmed Participants</div>
+    </div>
+
+    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 24px; text-align: center;">
+      <div style="font-size: 48px; font-weight: 700; color: #16a34a;">{{ checked_in_count }}</div>
+      <div style="font-size: 14px; color: #4b7250; margin-top: 4px;">Checked In</div>
+    </div>
+
+    <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 12px; padding: 24px; text-align: center;">
+      <div style="font-size: 48px; font-weight: 700; color: #ea580c;">{{ not_checked_in_count }}</div>
+      <div style="font-size: 14px; color: #9a3412; margin-top: 4px;">Not Yet Arrived</div>
+    </div>
+
+  </div>
+
+  <!-- Progress bar -->
+  <div style="margin-bottom: 32px;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+      <span style="font-size: 14px; font-weight: 500;">Check-in Progress</span>
+      <span style="font-size: 14px; color: var(--color-text-muted, #6b7280);">{{ percent }}%</span>
+    </div>
+    <div style="background: var(--color-border, #e5e7eb); border-radius: 999px; height: 10px; overflow: hidden;">
+      <div style="background: #16a34a; height: 100%; border-radius: 999px; width: {{ percent }}%; transition: width 0.5s;"></div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+
+    <!-- Checked in -->
+    <div>
+      <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        <span style="display: inline-block; width: 10px; height: 10px; background: #16a34a; border-radius: 50%;"></span>
+        Checked In ({{ checked_in_count }})
+      </h2>
+      <div style="border: 1px solid var(--color-border, #e5e7eb); border-radius: 8px; overflow: hidden;">
+        {% if checked_in %}
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            <thead>
+              <tr style="background: var(--color-bg-secondary, #f9fafb); border-bottom: 1px solid var(--color-border, #e5e7eb);">
+                <th style="padding: 8px 12px; text-align: left; font-weight: 600;">Name</th>
+                <th style="padding: 8px 12px; text-align: left; font-weight: 600;">Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for reg in checked_in %}
+              <tr style="border-bottom: 1px solid var(--color-border, #f3f4f6);">
+                <td style="padding: 8px 12px;">
+                  <a href="/admin/registrations/registration/{{ reg.id }}/change/" style="color: var(--color-primary-600, #2563eb); text-decoration: none;">{{ reg.full_name }}</a>
+                </td>
+                <td style="padding: 8px 12px; color: var(--color-text-muted, #6b7280);">
+                  {% if reg.checked_in_at %}{{ reg.checked_in_at|date:"H:i" }}{% else %}—{% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p style="padding: 20px; color: var(--color-text-muted, #6b7280); text-align: center;">No one checked in yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Not checked in -->
+    <div>
+      <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        <span style="display: inline-block; width: 10px; height: 10px; background: #ea580c; border-radius: 50%;"></span>
+        Not Yet Arrived ({{ not_checked_in_count }})
+      </h2>
+      <div style="border: 1px solid var(--color-border, #e5e7eb); border-radius: 8px; overflow: hidden;">
+        {% if not_checked_in %}
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            <thead>
+              <tr style="background: var(--color-bg-secondary, #f9fafb); border-bottom: 1px solid var(--color-border, #e5e7eb);">
+                <th style="padding: 8px 12px; text-align: left; font-weight: 600;">Name</th>
+                <th style="padding: 8px 12px; text-align: left; font-weight: 600;">University</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for reg in not_checked_in %}
+              <tr style="border-bottom: 1px solid var(--color-border, #f3f4f6);">
+                <td style="padding: 8px 12px;">
+                  <a href="/admin/registrations/registration/{{ reg.id }}/change/" style="color: var(--color-primary-600, #2563eb); text-decoration: none;">{{ reg.full_name }}</a>
+                </td>
+                <td style="padding: 8px 12px; color: var(--color-text-muted, #6b7280);">{{ reg.get_university_display }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p style="padding: 20px; color: var(--color-text-muted, #6b7280); text-align: center;">Everyone has checked in!</p>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  <p style="margin-top: 20px; font-size: 13px; color: var(--color-text-muted, #9ca3af);">
+    Page refreshes automatically every 30 seconds.
+  </p>
+
+</div>
+
+<script>
+  setTimeout(function() { location.reload(); }, 30000);
+</script>
+{% endblock %}

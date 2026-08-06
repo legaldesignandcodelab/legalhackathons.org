@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Application Received</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#07070A; color:#E8E8EC; font-family:'Segoe UI',Arial,sans-serif; }
+.wrapper { max-width:600px; margin:0 auto; padding:40px 20px; }
+.logo { font-family:monospace; font-size:22px; color:#00FF88; letter-spacing:2px; text-align:center; }
+.badge { display:inline-block; background:#ffc800; color:#07070A; font-weight:bold; font-size:12px; padding:4px 12px; border-radius:100px; margin:8px 0; letter-spacing:1px; }
+h1 { font-size:26px; margin:24px 0 8px; }
+p { color:#A0A0B0; line-height:1.7; margin-bottom:12px; }
+.card { background:#111118; border:1px solid #1E1E2E; border-radius:12px; padding:24px; margin:24px 0; }
+.footer { text-align:center; color:#555566; font-size:12px; margin-top:48px; line-height:1.8; }
+.footer a { color:#00FF88; text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div style="text-align:center; margin-bottom:32px;">
+    <div class="logo">// LEGAL HACKATHON</div>
+    <div class="badge">APPLICATION RECEIVED</div>
+  </div>
+  <h1>Got it, {{ name }}!</h1>
+  <p>Thank you for applying to the Legal Hackathon @ UNISG. We have received your application and will review it shortly.</p>
+  <div class="card">
+    <p style="color:#E8E8EC; margin:0;">You will receive a confirmation email once your application has been reviewed — usually within a few days.</p>
+  </div>
+  <div class="footer">
+    <p>Questions? <a href="mailto:legal-hackathon@unisg.ch">legal-hackathon@unisg.ch</a></p>
+    <p style="margin-top:8px;"><a href="https://www.legalhackathons.org">legalhackathons.org</a></p>
+  </div>
+</div>
+</body>
+</html>

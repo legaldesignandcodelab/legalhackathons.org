@@ -1,0 +1,54 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Team Matching — Solo Participants (Confirmed)</h1>
+<p style="margin:16px 0; color:#666;">
+  Groups solo-open participants by overlapping knowledge areas. Only <strong>confirmed</strong> registrations with team preference <em>solo_open</em> are included.
+</p>
+
+{% if teams %}
+  <h2 style="margin-top:24px;">Suggested Teams ({{ teams|length }})</h2>
+  {% for team in teams %}
+    <div style="border:1px solid #ddd; border-radius:4px; padding:16px; margin:12px 0;">
+      <strong>Team {{ forloop.counter }}</strong>
+      <table style="width:100%; margin-top:8px; border-collapse:collapse;">
+        <tr style="background:#f5f5f5;">
+          <th style="text-align:left; padding:6px;">Name</th>
+          <th style="text-align:left; padding:6px;">Email</th>
+          <th style="text-align:left; padding:6px;">Knowledge Areas</th>
+        </tr>
+        {% for member in team %}
+        <tr>
+          <td style="padding:6px; border-top:1px solid #eee;">{{ member.full_name }}</td>
+          <td style="padding:6px; border-top:1px solid #eee;">{{ member.email }}</td>
+          <td style="padding:6px; border-top:1px solid #eee;">{{ member.knowledge_areas_display }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>No suggested teams yet. Confirm some solo-open registrations first.</p>
+{% endif %}
+
+{% if unmatched %}
+  <h2 style="margin-top:32px;">Unmatched Participants ({{ unmatched|length }})</h2>
+  <table style="border-collapse:collapse; width:100%;">
+    <tr style="background:#f5f5f5;">
+      <th style="text-align:left; padding:6px;">Name</th>
+      <th style="text-align:left; padding:6px;">Email</th>
+      <th style="text-align:left; padding:6px;">Knowledge Areas</th>
+    </tr>
+    {% for p in unmatched %}
+    <tr>
+      <td style="padding:6px; border-top:1px solid #eee;">{{ p.full_name }}</td>
+      <td style="padding:6px; border-top:1px solid #eee;">{{ p.email }}</td>
+      <td style="padding:6px; border-top:1px solid #eee;">{{ p.knowledge_areas_display }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+
+<div style="margin-top:24px;">
+  <a href="{% url 'admin:registrations_registration_changelist' %}" class="button">← Back to Registrations</a>
+</div>
+{% endblock %}
