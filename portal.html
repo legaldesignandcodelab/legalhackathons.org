@@ -974,6 +974,7 @@
     function getCsrf() { return getCsrfToken(); }
 
     async function api(method, path, body) {
+      await fetchCsrf(BACKEND_URL);
       const opts = { method, credentials: 'include', headers: { 'X-CSRFToken': getCsrf() } };
       if (body instanceof FormData) {
         opts.body = body;
