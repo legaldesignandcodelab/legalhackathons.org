@@ -4,13 +4,10 @@ import base64
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.template.loader import render_to_string
-from django.template import Context
-from django.template.loader import get_template
 
 
 def _render_txt(template_name, context):
-    t = get_template(template_name)
-    return t.render(Context(context, autoescape=False))
+    return render_to_string(template_name, context)
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
