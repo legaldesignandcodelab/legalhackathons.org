@@ -17,7 +17,7 @@ def _generate_qr_png(token: str) -> bytes:
     qr = qrcode.QRCode(version=1, box_size=8, border=3)
     qr.add_data(str(token))
     qr.make(fit=True)
-    img = qr.make_image(fill_color='#00FF88', back_color='#07070A')
+    img = qr.make_image(fill_color='#000000', back_color='#ffffff')
     buf = io.BytesIO()
     img.save(buf, format='PNG')
     return buf.getvalue()
