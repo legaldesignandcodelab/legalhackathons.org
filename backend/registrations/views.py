@@ -146,6 +146,8 @@ def _staff_or_403(request):
 
 
 class StaffLoginView(APIView):
+    throttle_scope = 'auth'
+
     def post(self, request):
         username = request.data.get('username', '').strip()
         password = request.data.get('password', '')
@@ -273,6 +275,8 @@ class TeamBoardView(APIView):
 # ── Auth endpoints ────────────────────────────────────────────────────────────
 
 class SetPasswordView(APIView):
+    throttle_scope = 'auth'
+
     def post(self, request):
         uid = request.data.get('uid')
         token = request.data.get('token')
@@ -304,6 +308,8 @@ class SetPasswordView(APIView):
 
 
 class LoginView(APIView):
+    throttle_scope = 'auth'
+
     def post(self, request):
         email = request.data.get('email', '').strip().lower()
         password = request.data.get('password', '')
