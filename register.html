@@ -303,6 +303,12 @@
       <div class="form-card">
         <form id="reg-form" novalidate>
 
+          <!-- Honeypot — hidden from real users, bots tend to fill every field -->
+          <div style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;" aria-hidden="true">
+            <label for="website">Website</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+          </div>
+
           <!-- Personal Info -->
           <div class="form-section-title">// personal info</div>
 
@@ -520,6 +526,7 @@
     const form = document.getElementById('reg-form');
     const submitBtn = document.getElementById('submit-btn');
     const messageBox = document.getElementById('form-message');
+    const formLoadedAt = Date.now();
 
     function showMessage(text, type) {
       messageBox.textContent = text;
@@ -624,6 +631,9 @@
 
       const discord = document.getElementById('discord_handle').value.trim();
       if (discord) data.append('discord_handle', discord);
+
+      data.append('website', document.getElementById('website').value);
+      data.append('form_seconds', Math.round((Date.now() - formLoadedAt) / 1000));
 
       try {
         const res = await fetch(`${BACKEND_URL}/register/`, {

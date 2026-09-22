@@ -129,8 +129,14 @@ SITE_BASE_URL = config('SITE_BASE_URL', default='http://localhost')
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': ['rest_framework.renderers.JSONRenderer'],
-    'DEFAULT_THROTTLE_CLASSES': ['rest_framework.throttling.AnonRateThrottle'],
-    'DEFAULT_THROTTLE_RATES': {'anon': '20/hour'},
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '20/hour',
+        'register': '5/hour',
+    },
 }
 
 UNFOLD = {

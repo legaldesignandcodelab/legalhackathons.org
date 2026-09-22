@@ -7,6 +7,7 @@ from .views import (
     TeamCreateView, TeamJoinView, TeamMineView,
     ChallengeListView, ChallengePreferenceView, ChallengeAssignmentView,
     ScheduleView, SubmissionView, AnnouncementListView,
+    StaffLoginView, StaffLogoutView, StaffMeView,
     export_registrations_csv,
 )
 
@@ -31,6 +32,11 @@ urlpatterns = [
     path('auth/logout/', LogoutView.as_view(), name='logout'),
     path('me/', MeView.as_view(), name='me'),
     path('me/update/', MeUpdateView.as_view(), name='me_update'),
+
+    # Staff / organizer auth (check-in page)
+    path('auth/staff-login/', StaffLoginView.as_view(), name='staff_login'),
+    path('auth/staff-logout/', StaffLogoutView.as_view(), name='staff_logout'),
+    path('auth/staff-me/', StaffMeView.as_view(), name='staff_me'),
 
     # Teams (authenticated)
     path('teams/create/', TeamCreateView.as_view(), name='team_create'),

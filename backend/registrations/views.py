@@ -1,6 +1,8 @@
 import csv
 import logging
-from django.http import HttpResponse, JsonResponse
+import os
+from django.conf import settings
+from django.http import HttpResponse, JsonResponse, FileResponse, Http404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -67,6 +69,8 @@ class SiteStatusView(APIView):
 
 
 class RegisterView(APIView):
+    throttle_scope = 'register'
+
     def post(self, request):
         site = SiteSettings.get()
         if not site.registration_open:
@@ -74,6 +78,20 @@ class RegisterView(APIView):
                 {'errors': {'__all__': ['Registrations are currently closed.']}},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
+
+        # Honeypot: real users never see or fill this field.
+        if request.data.get('website', '').strip():
+            logger.info('Registration blocked: honeypot filled (ip=%s)', request.META.get('REMOTE_ADDR'))
+            return Response({'message': 'Application received! We\'ll review it and get back to you within a few days.'}, status=status.HTTP_201_CREATED)
+
+        # Timing check: a human needs at least a few seconds to fill this form out.
+        try:
+            form_seconds = float(request.data.get('form_seconds', 999))
+        except (TypeError, ValueError):
+            form_seconds = 999
+        if form_seconds < 3:
+            logger.info('Registration blocked: submitted too fast (%.1fs, ip=%s)', form_seconds, request.META.get('REMOTE_ADDR'))
+            return Response({'message': 'Application received! We\'ll review it and get back to you within a few days.'}, status=status.HTTP_201_CREATED)
 
         serializer = RegistrationSerializer(data=request.data)
         if not serializer.is_valid():
@@ -121,8 +139,63 @@ class RegisterView(APIView):
         return Response({'message': msg}, status=status.HTTP_201_CREATED)
 
 
+def _staff_or_403(request):
+    if not (request.user.is_authenticated and request.user.is_staff):
+        return Response({'error': 'Organizer login required.'}, status=status.HTTP_403_FORBIDDEN)
+    return None
+
+
+class StaffLoginView(APIView):
+    def post(self, request):
+        username = request.data.get('username', '').strip()
+        password = request.data.get('password', '')
+        user = authenticate(request, username=username, password=password)
+        if not user or not user.is_staff:
+            return Response({'error': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+        login(request, user)
+        return Response({'message': 'Logged in.'})
+
+
+class StaffLogoutView(APIView):
+    def post(self, request):
+        logout(request)
+        return Response({'message': 'Logged out.'})
+
+
+class StaffMeView(APIView):
+    def get(self, request):
+        is_staff = request.user.is_authenticated and request.user.is_staff
+        return Response({'is_staff': is_staff})
+
+
 class CheckInView(APIView):
+    """Organizer-only: looks up a participant by QR token but does not mutate state (GET is safe)."""
     def get(self, request, token):
+        err = _staff_or_403(request)
+        if err:
+            return err
+        try:
+            reg = Registration.objects.get(qr_token=token)
+        except Registration.DoesNotExist:
+            return Response({'error': 'Invalid QR code.'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({
+            'already_checked_in': reg.checked_in,
+            'full_name': reg.full_name,
+            'email': reg.email,
+            'university': reg.get_university_display(),
+            'team_preference': reg.get_team_preference_display(),
+            'dietary_restrictions': reg.dietary_restrictions,
+            'photo_consent': reg.photo_consent,
+            'status': reg.get_status_display(),
+            'checked_in_at': reg.checked_in_at,
+        })
+
+    def post(self, request, token):
+        """Organizer-only: actually performs the check-in (state-changing, requires CSRF)."""
+        err = _staff_or_403(request)
+        if err:
+            return err
         try:
             reg = Registration.objects.get(qr_token=token)
         except Registration.DoesNotExist:
@@ -659,3 +732,45 @@ def export_registrations_csv(request):
             r.created_at.strftime('%Y-%m-%d %H:%M'),
         ])
     return response
+
+
+# ── Protected media ──────────────────────────────────────────────────────────
+
+def protected_media(request, path):
+    """
+    Serves uploaded files under MEDIA_ROOT with authorization checks.
+    Never exposed via a public web-server alias — CVs and gated challenge
+    resources must not be downloadable by URL guessing alone.
+    """
+    is_staff = request.user.is_authenticated and request.user.is_staff
+
+    if path.startswith('challenge_resources/'):
+        if not is_staff:
+            reg, err = _participant_or_401(request)
+            if err:
+                raise Http404()
+            tm = TeamMember.objects.filter(registration=reg).select_related('team').first()
+            allowed = False
+            if tm:
+                try:
+                    asgn = tm.team.challenge_assignment
+                    allowed = (
+                        asgn.challenge.assignment_published
+                        and asgn.challenge.resource_file
+                        and asgn.challenge.resource_file.name == path
+                    )
+                except ChallengeAssignment.DoesNotExist:
+                    allowed = False
+            if not allowed:
+                raise Http404()
+    else:
+        # CVs, pitch decks, and other submission files: staff-only (viewed via Django admin).
+        if not is_staff:
+            raise Http404()
+
+    full_path = os.path.normpath(os.path.join(settings.MEDIA_ROOT, path))
+    media_root = os.path.normpath(str(settings.MEDIA_ROOT))
+    if not full_path.startswith(media_root + os.sep) or not os.path.isfile(full_path):
+        raise Http404()
+
+    return FileResponse(open(full_path, 'rb'))

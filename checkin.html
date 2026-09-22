@@ -273,14 +273,15 @@
   <main class="checkin-page">
     <div class="checkin-card">
 
-      <!-- Password gate -->
+      <!-- Organizer login -->
       <div id="login-gate">
         <div class="checkin-title">// organizer access</div>
         <h1>Check-in</h1>
-        <p class="gate-label">This page is for event organizers only. Enter the check-in password to continue.</p>
-        <div class="input-row">
+        <p class="gate-label">This page is for event organizers only. Log in with your admin account to continue.</p>
+        <div class="input-row" style="flex-direction:column; gap:10px;">
+          <input type="text" id="gate-user" placeholder="Username" autocomplete="username">
           <input type="password" id="gate-pw" placeholder="Password" autocomplete="current-password">
-          <button class="btn-primary" id="gate-btn">Enter</button>
+          <button class="btn-primary" id="gate-btn" style="width:100%;">Log In</button>
         </div>
         <div class="error-text" id="gate-err"></div>
       </div>
@@ -336,11 +337,13 @@
     const BACKEND_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
       ? 'http://localhost/api'
       : 'https://api.legalhackathons.org/api';
-    const CHECKIN_PASSWORD = 'hackathon2026';
 
-    // ── Password gate ──
+    fetchCsrf(BACKEND_URL);
+
+    // ── Organizer login ──
     const loginGate  = document.getElementById('login-gate');
     const checkinUI  = document.getElementById('checkin-ui');
+    const gateUser   = document.getElementById('gate-user');
     const gatePw     = document.getElementById('gate-pw');
     const gateBtn    = document.getElementById('gate-btn');
     const gateErr    = document.getElementById('gate-err');
@@ -348,25 +351,49 @@
     const urlToken = new URLSearchParams(window.location.search).get('token');
 
     function unlock() {
-      sessionStorage.setItem('checkin_auth', '1');
       loginGate.style.display = 'none';
       checkinUI.style.display = 'block';
       if (urlToken) doCheckIn(urlToken);
     }
 
-    if (sessionStorage.getItem('checkin_auth')) unlock();
+    (async function checkSession() {
+      try {
+        await fetchCsrf(BACKEND_URL);
+        const res = await fetch(`${BACKEND_URL}/auth/staff-me/`, { credentials: 'include' });
+        const data = await res.json();
+        if (data.is_staff) unlock();
+      } catch (_) { /* stay on login gate */ }
+    })();
 
-    gateBtn.addEventListener('click', () => {
-      if (gatePw.value === CHECKIN_PASSWORD) {
-        unlock();
-      } else {
-        gateErr.textContent = 'Incorrect password.';
-        gatePw.value = '';
-        gatePw.focus();
+    async function attemptLogin() {
+      gateErr.textContent = '';
+      gateBtn.disabled = true;
+      try {
+        await window.__csrfReady;
+        const res = await fetch(`${BACKEND_URL}/auth/staff-login/`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+          body: JSON.stringify({ username: gateUser.value.trim(), password: gatePw.value }),
+        });
+        if (res.ok) {
+          unlock();
+        } else {
+          const data = await res.json().catch(() => ({}));
+          gateErr.textContent = data.error || 'Invalid credentials.';
+          gatePw.value = '';
+          gatePw.focus();
+        }
+      } catch (_) {
+        gateErr.textContent = 'Could not reach server. Please try again.';
+      } finally {
+        gateBtn.disabled = false;
       }
-    });
+    }
 
-    gatePw.addEventListener('keydown', e => { if (e.key === 'Enter') gateBtn.click(); });
+    gateBtn.addEventListener('click', attemptLogin);
+    gateUser.addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(); });
+    gatePw.addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(); });
 
     // ── QR Camera Scanner ──
     const scanBtn      = document.getElementById('scan-btn');
@@ -494,7 +521,11 @@
       result.style.display = 'none';
 
       try {
-        const res = await fetch(`${BACKEND_URL}/checkin/${encodeURIComponent(token)}/`);
+        const res = await fetch(`${BACKEND_URL}/checkin/${encodeURIComponent(token)}/`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'X-CSRFToken': getCsrfToken() },
+        });
         const data = await res.json();
         result.style.display = 'block';
 
@@ -522,6 +553,11 @@
             <div class="info-row"><span class="key">Photo consent</span><span class="val">${data.photo_consent ? 'Yes' : 'No'}</span></div>
             <div class="info-row"><span class="key">Status</span><span class="val">${escHtml(data.status)}</span></div>
           `;
+        } else if (res.status === 403) {
+          result.style.display = 'none';
+          checkinUI.style.display = 'none';
+          loginGate.style.display = 'block';
+          gateErr.textContent = 'Session expired. Please log in again.';
         } else {
           resultStatus.className = 'result-status err';
           resultIcon.textContent = '❌';
