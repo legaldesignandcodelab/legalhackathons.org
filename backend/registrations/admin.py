@@ -57,11 +57,23 @@ class UserAdmin(BaseUserAdmin, ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return super().has_delete_permission(request, obj) and not self._hidden_from(request, obj)
 
-    def get_readonly_fields(self, request, obj=None):
-        readonly = list(super().get_readonly_fields(request, obj))
-        if not request.user.is_superuser:
-            readonly += ['is_superuser', 'user_permissions']
-        return readonly
+    SUPERUSER_ONLY_FIELDS = ('is_superuser', 'user_permissions')
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if request.user.is_superuser:
+            return fieldsets
+        # Hide superuser-only fields entirely; fields missing from the form cannot be posted either.
+        return [
+            (name, {**opts, 'fields': tuple(f for f in opts['fields'] if f not in self.SUPERUSER_ONLY_FIELDS)})
+            for name, opts in fieldsets
+        ]
+
+    def get_list_filter(self, request):
+        filters = super().get_list_filter(request)
+        if request.user.is_superuser:
+            return filters
+        return [f for f in filters if f != 'is_superuser']
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
