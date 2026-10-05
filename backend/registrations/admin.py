@@ -3,6 +3,8 @@ import io
 import qrcode
 import base64
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import Group, User
 from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.html import format_html
@@ -10,6 +12,7 @@ from django.urls import path
 from django.shortcuts import render
 from django.db.models import Count
 from unfold.admin import ModelAdmin, TabularInline
+from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 from .models import Registration, SiteSettings, Team, TeamMember, Challenge, ChallengePreference, ChallengeAssignment, ScheduleItem, Submission, Announcement
 from .views import _create_participant_user
 from .emails import send_confirmation_email
@@ -18,6 +21,60 @@ from .emails import send_confirmation_email
 def registration_pending_count(request):
     count = Registration.objects.filter(status='pending').count()
     return str(count) if count > 0 else ''
+
+
+def can_view_users(request):
+    """Sidebar visibility for the Users entry (see UNFOLD['SIDEBAR'] in settings)."""
+    return request.user.has_perm('auth.view_user') or request.user.has_perm('auth.change_user')
+
+
+# ── Users: superusers see everyone, staff see everyone except superusers ─────
+
+admin.site.unregister(User)
+
+
+@admin.register(User)
+class UserAdmin(BaseUserAdmin, ModelAdmin):
+    form = UserChangeForm
+    add_form = UserCreationForm
+    change_password_form = AdminPasswordChangeForm
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(is_superuser=False)
+
+    def _hidden_from(self, request, obj):
+        return obj is not None and obj.is_superuser and not request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return super().has_view_permission(request, obj) and not self._hidden_from(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        return super().has_change_permission(request, obj) and not self._hidden_from(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        return super().has_delete_permission(request, obj) and not self._hidden_from(request, obj)
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly = list(super().get_readonly_fields(request, obj))
+        if not request.user.is_superuser:
+            readonly += ['is_superuser', 'user_permissions']
+        return readonly
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if not request.user.is_superuser and 'groups' in form.base_fields:
+            # Staff may only assign groups they could not use to escalate: groups they are in
+            # themselves, or groups without any user/group-management permission.
+            own = request.user.groups.all()
+            no_auth_perms = Group.objects.exclude(permissions__content_type__app_label='auth')
+            allowed = Group.objects.filter(pk__in=own.values('pk')) | no_auth_perms
+            if obj is not None:
+                allowed = allowed | obj.groups.all()
+            form.base_fields['groups'].queryset = allowed.distinct()
+        return form
 
 
 @admin.register(SiteSettings)

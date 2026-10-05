@@ -256,6 +256,7 @@ UNFOLD = {
                         'title': 'Users',
                         'icon': 'manage_accounts',
                         'link': '/admin/auth/user/',
+                        'permission': 'registrations.admin.can_view_users',
                     },
                 ],
             },
