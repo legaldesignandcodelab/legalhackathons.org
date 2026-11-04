@@ -110,14 +110,14 @@ def export_csv(modeladmin, request, queryset):
     response['Content-Disposition'] = 'attachment; filename="registrations.csv"'
     writer = csv.writer(response)
     writer.writerow([
-        'ID', 'Full Name', 'Email', 'University', 'Study Program', 'Year of Study',
+        'ID', 'Full Name', 'Email', 'Discord', 'University', 'Study Program', 'Year of Study',
         'Knowledge Areas', 'Team Preference', 'Dietary Restrictions',
         'Photo Consent', 'How Did You Hear', 'CV Uploaded', 'Status',
         'Checked In', 'Checked In At', 'Registered At',
     ])
     for r in queryset:
         writer.writerow([
-            str(r.id), r.full_name, r.email,
+            str(r.id), r.full_name, r.email, r.discord_handle,
             r.get_university_display(), r.study_program, r.get_year_of_study_display(),
             r.knowledge_areas_display, r.get_team_preference_display(),
             r.dietary_display, 'Yes' if r.photo_consent else 'No',
@@ -166,11 +166,11 @@ mark_checked_in.short_description = 'Mark selected as Checked In'
 @admin.register(Registration)
 class RegistrationAdmin(ModelAdmin):
     list_display = [
-        'full_name', 'email', 'university', 'study_program',
+        'full_name', 'email', 'discord_handle', 'university', 'study_program',
         'team_preference', 'status', 'checked_in', 'created_at',
     ]
     list_filter = ['status', 'team_preference', 'university', 'checked_in', 'photo_consent']
-    search_fields = ['full_name', 'email', 'study_program']
+    search_fields = ['full_name', 'email', 'discord_handle', 'study_program']
     readonly_fields = ['id', 'qr_token', 'qr_code_preview', 'created_at', 'updated_at', 'checked_in_at']
     actions = [export_csv, mark_confirmed, mark_waitlist, mark_rejected, mark_checked_in]
 
@@ -179,7 +179,7 @@ class RegistrationAdmin(ModelAdmin):
             'fields': ('id', 'full_name', 'email', 'university', 'study_program', 'year_of_study'),
         }),
         ('Skills & Team', {
-            'fields': ('knowledge_areas', 'team_preference'),
+            'fields': ('knowledge_areas', 'team_preference', 'discord_handle'),
         }),
         ('Logistics', {
             'fields': ('dietary_restrictions', 'photo_consent', 'how_did_you_hear'),

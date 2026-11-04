@@ -716,7 +716,7 @@ def export_registrations_csv(request):
     response['Content-Disposition'] = 'attachment; filename="registrations_all.csv"'
     writer = csv.writer(response)
     writer.writerow([
-        'ID', 'Full Name', 'Email', 'University', 'Study Program', 'Year of Study',
+        'ID', 'Full Name', 'Email', 'Discord', 'University', 'Study Program', 'Year of Study',
         'Knowledge Areas', 'Team Preference', 'Dietary Restrictions',
         'Photo Consent', 'How Did You Hear', 'CV Uploaded', 'Status',
         'Team Name', 'Team Role', 'Checked In', 'Checked In At', 'Registered At',
@@ -724,7 +724,7 @@ def export_registrations_csv(request):
     for r in Registration.objects.all():
         tm = TeamMember.objects.filter(registration=r).select_related('team').first()
         writer.writerow([
-            str(r.id), r.full_name, r.email,
+            str(r.id), r.full_name, r.email, r.discord_handle,
             r.get_university_display(), r.study_program, r.get_year_of_study_display(),
             r.knowledge_areas_display, r.get_team_preference_display(),
             r.dietary_display, 'Yes' if r.photo_consent else 'No',
