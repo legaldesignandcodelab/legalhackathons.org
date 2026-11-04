@@ -500,6 +500,25 @@
 
     /* ── Loading spinner ── */
     .loading-text { color: var(--muted); font-family: var(--mono); font-size: 0.88rem; padding: 40px 0; text-align: center; }
+
+    /* ── Markdown content (challenge details) ── */
+    .md > :first-child { margin-top: 0; }
+    .md > :last-child { margin-bottom: 0; }
+    .md p, .md ul, .md ol, .md blockquote, .md pre, .md table { margin: 0 0 0.9em; }
+    .md h1, .md h2, .md h3, .md h4 { font-weight: 700; line-height: 1.3; margin: 1.3em 0 0.5em; }
+    .md h1 { font-size: 1.25rem; } .md h2 { font-size: 1.1rem; } .md h3, .md h4 { font-size: 0.98rem; }
+    .md ul, .md ol { padding-left: 1.4em; }
+    .md li { margin: 0.2em 0; }
+    .md a { color: var(--green); text-decoration: underline; text-underline-offset: 2px; }
+    .md strong { font-weight: 700; }
+    .md code { font-family: var(--mono); font-size: 0.85em; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.35em; }
+    .md pre { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
+    .md pre code { background: none; border: 0; padding: 0; }
+    .md blockquote { border-left: 3px solid var(--green); padding-left: 12px; color: var(--muted); }
+    .md hr { border: 0; border-top: 1px solid var(--border); margin: 1.2em 0; }
+    .md table { border-collapse: collapse; display: block; overflow-x: auto; }
+    .md th, .md td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; }
+    .md img { max-width: 100%; }
   </style>
 </head>
 <body>
@@ -819,24 +838,24 @@
             <div class="detail-two-col">
               <div class="card" id="detail-desc-card" style="display:none;">
                 <div class="detail-section-label">// challenge description</div>
-                <div style="font-size:0.9rem;line-height:1.75;white-space:pre-wrap;" id="detail-desc"></div>
+                <div style="font-size:0.9rem;line-height:1.75;" class="md" id="detail-desc"></div>
               </div>
               <div class="card" id="detail-deepdive-card" style="display:none;">
                 <div class="detail-section-label">// deep dive</div>
-                <div style="font-size:0.9rem;line-height:1.75;white-space:pre-wrap;" id="detail-deepdive"></div>
+                <div style="font-size:0.9rem;line-height:1.75;" class="md" id="detail-deepdive"></div>
               </div>
             </div>
 
             <!-- Full-width: Judging criteria -->
             <div class="card" id="detail-judging-card" style="display:none;margin-bottom:16px;">
               <div class="detail-section-label">// judging criteria</div>
-              <div style="font-size:0.9rem;line-height:1.75;white-space:pre-wrap;" id="detail-judging"></div>
+              <div style="font-size:0.9rem;line-height:1.75;" class="md" id="detail-judging"></div>
             </div>
 
             <!-- Resources (only for assigned case) -->
             <div id="detail-resources-card" style="display:none;" class="card">
               <div class="detail-section-label">// resources</div>
-              <div style="font-size:0.88rem;line-height:1.7;white-space:pre-wrap;" id="detail-resources-text"></div>
+              <div style="font-size:0.88rem;line-height:1.7;" class="md" id="detail-resources-text"></div>
               <a id="detail-resources-file" href="#" target="_blank" style="display:none;margin-top:12px;color:var(--green);font-family:var(--mono);font-size:0.82rem;">↓ Download resource file</a>
             </div>
           </div>
@@ -951,6 +970,8 @@
   </div>
 
   <script src="main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
   <script>
     const BACKEND_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
       ? 'http://localhost/api'
@@ -966,6 +987,17 @@
     let prefLoaded = false;
 
     // ── Utils ────────────────────────────────────────────────────────────────
+
+    // Render Markdown
+    function renderMd(el, text) {
+      if (window.marked && window.DOMPurify) {
+        el.innerHTML = DOMPurify.sanitize(marked.parse(text || '', { breaks: true, gfm: true }));
+        el.querySelectorAll('a[href]').forEach(a => { a.target = '_blank'; a.rel = 'noopener noreferrer'; });
+      } else {
+        el.textContent = text || '';
+        el.style.whiteSpace = 'pre-wrap';
+      }
+    }
 
     function escHtml(s) {
       return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -1487,25 +1519,25 @@
       // Description (left col)
       const desc = c?.description || a.challenge_description;
       const descCard = document.getElementById('detail-desc-card');
-      if (desc) { document.getElementById('detail-desc').textContent = desc; descCard.style.display = 'block'; }
+      if (desc) { renderMd(document.getElementById('detail-desc'), desc); descCard.style.display = 'block'; }
       else { descCard.style.display = 'none'; }
 
       // Deep dive (right col)
       const dd = c?.deep_dive || a.challenge_deep_dive;
       const ddCard = document.getElementById('detail-deepdive-card');
-      if (dd) { document.getElementById('detail-deepdive').textContent = dd; ddCard.style.display = 'block'; }
+      if (dd) { renderMd(document.getElementById('detail-deepdive'), dd); ddCard.style.display = 'block'; }
       else { ddCard.style.display = 'none'; }
 
       // Judging (full width)
       const jc = c?.judging_criteria || a.challenge_judging_criteria;
       const jCard = document.getElementById('detail-judging-card');
-      if (jc) { document.getElementById('detail-judging').textContent = jc; jCard.style.display = 'block'; }
+      if (jc) { renderMd(document.getElementById('detail-judging'), jc); jCard.style.display = 'block'; }
       else { jCard.style.display = 'none'; }
 
       // Resources (only for assigned case)
       const resCard = document.getElementById('detail-resources-card');
       if (a.resources_text || a.resource_file_url) {
-        document.getElementById('detail-resources-text').textContent = a.resources_text || '';
+        renderMd(document.getElementById('detail-resources-text'), a.resources_text);
         const fileLink = document.getElementById('detail-resources-file');
         if (a.resource_file_url) { fileLink.href = a.resource_file_url; fileLink.style.display = 'block'; }
         else { fileLink.style.display = 'none'; }
