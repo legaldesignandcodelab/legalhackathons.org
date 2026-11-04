@@ -28,10 +28,8 @@ window.getCsrfToken = function () { return window.__csrf; };
   }
 
   // Only show once per browser session
-  if (sessionStorage.getItem('boot_done')) {
-    skipBoot();
-    return;
-  }
+  skipBoot();
+  return;
 
   const lines = [
     '> initializing legal_hackathon.exe...',
