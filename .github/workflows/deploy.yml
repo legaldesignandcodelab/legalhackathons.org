@@ -63,5 +63,12 @@ jobs:
             docker compose -f docker-compose.prod.yml up -d
             docker compose -f docker-compose.prod.yml exec -T web python manage.py migrate --noinput
             docker compose -f docker-compose.prod.yml exec -T web python manage.py collectstatic --noinput
+            # TLS: renew via webroot (nginx serves /.well-known on :80; standalone mode can't bind :80 while nginx runs).
+            # Only renews when <30 days left; also switches the stored renewal config to webroot for certbot.timer.
+            mkdir -p /var/www/certbot /etc/letsencrypt/renewal-hooks/deploy
+            printf '#!/bin/sh\ncd /app/backend && docker compose -f docker-compose.prod.yml exec -T nginx nginx -s reload\n' > /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
+            chmod +x /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
+            certbot certonly --webroot -w /var/www/certbot -d api.legalhackathons.org --non-interactive --keep-until-expiring
+            systemctl enable --now certbot.timer || true
             docker compose -f docker-compose.prod.yml exec -T nginx nginx -s reload
             docker image prune -f

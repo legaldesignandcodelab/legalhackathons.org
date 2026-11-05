@@ -40,5 +40,6 @@ chown -R deploy:deploy /app
 echo "=== Done ==="
 echo "Next steps:"
 echo "1. Edit /home/deploy/.ssh/authorized_keys and paste your real SSH public key"
-echo "2. Run: certbot certonly --standalone -d api.legalhackathons.org"
+echo "2. Run (before nginx is up): certbot certonly --standalone -d api.legalhackathons.org"
+echo "   Renewals are switched to webroot mode by the deploy workflow (standalone can't renew while nginx holds :80)"
 echo "3. SSH as deploy user and follow the deployment guide"
