@@ -148,7 +148,7 @@ document.addEventListener('mousemove', e => {
 (function () {
   const cdD = document.getElementById('cd-d');
   if (!cdD) return;
-  const countdownTarget = new Date('2026-11-07T10:00:00+01:00');
+  const countdownTarget = new Date('2026-11-07T12:00:00+01:00');
   function tick() {
     const d = countdownTarget - new Date();
     if (d <= 0) return;

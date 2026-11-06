@@ -511,7 +511,7 @@
         bar.style.display = 'block';
         document.getElementById('spots-left').textContent = data.spots_left;
         document.getElementById('spots-max').textContent = data.max_spots;
-        const pct = Math.max(0, Math.min(100, (data.spots_left / data.max_spots) * 100));
+        const pct = Math.max(0, Math.min(60, (data.spots_left / data.max_spots) * 60));
         document.getElementById('spots-bar-fill').style.width = pct + '%';
         if (data.spots_left === 0) {
           document.getElementById('spots-left').style.color = '#ffc800';
