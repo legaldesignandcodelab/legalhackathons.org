@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 
 class SiteSettings(models.Model):
-    max_spots = models.PositiveIntegerField(default=100, help_text='Maximum confirmed registrations allowed.')
+    max_spots = models.PositiveIntegerField(default=60, help_text='Maximum confirmed registrations allowed.')
     registration_open = models.BooleanField(default=True, help_text='Uncheck to close registrations entirely.')
     auto_confirm = models.BooleanField(default=False, help_text='Automatically confirm pending registrations when a spot opens up.')
     preference_deadline = models.DateTimeField(null=True, blank=True, help_text='Global deadline for case preference submissions (leave blank = no deadline)')
