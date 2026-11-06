@@ -258,3 +258,50 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     document.querySelector('.nav-links')?.classList.remove('open');
   });
 });
+
+/* ── Published Challenges (replaces static tracks once available) ── */
+(function () {
+  const list = document.getElementById('challenge-list');
+  if (!list) return;
+  const backendUrl = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost/api'
+    : 'https://api.legalhackathons.org/api';
+
+  const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const md = text => {
+    if (window.marked && window.DOMPurify) {
+      return DOMPurify.sanitize(marked.parse(text || '', { breaks: true, gfm: true }));
+    }
+    return `<p style="white-space:pre-wrap">${esc(text)}</p>`;
+  };
+
+  fetch(`${backendUrl}/challenges/`)
+    .then(r => (r.ok ? r.json() : []))
+    .then(challenges => {
+      if (!Array.isArray(challenges) || !challenges.length) return; // keep static tracks
+      list.innerHTML = challenges.map((c, i) => {
+        const more = [c.description && `<div class="ch-md">${md(c.description)}</div>`,
+                      c.judging_criteria && `<div class="ch-sub">// judging criteria</div><div class="ch-md">${md(c.judging_criteria)}</div>`]
+          .filter(Boolean).join('');
+        return `
+        <article class="challenge-item reveal${i % 4 ? ' reveal-d' + (i % 4) : ''}">
+          <div class="ch-num">${String(i + 1).padStart(2, '0')}</div>
+          <div class="ch-body">
+            ${c.sponsor ? `<div class="ch-sponsor">${esc(c.sponsor)}</div>` : ''}
+            <h3>${esc(c.title)}</h3>
+            ${c.short_description ? `<p class="ch-short">${esc(c.short_description)}</p>` : ''}
+            ${more ? `<details class="ch-details"><summary>read full challenge</summary>${more}</details>` : ''}
+          </div>
+        </article>`;
+      }).join('');
+      list.querySelectorAll('.ch-md a[href]').forEach(a => { a.target = '_blank'; a.rel = 'noopener noreferrer'; });
+
+      document.getElementById('challenge-tracks').hidden = true;
+      document.getElementById('challenges-title').innerHTML = 'The <em>challenges</em>';
+      document.getElementById('challenges-desc').textContent =
+        'Each sponsor presents a real-world legal-AI problem. Choose the one that excites you most.';
+      list.hidden = false;
+      list.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    })
+    .catch(() => {});
+})();
