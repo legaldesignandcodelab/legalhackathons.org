@@ -71,7 +71,15 @@
 
   <!-- ── Hero ── -->
   <header class="hero">
-    <div class="hero-tag reveal"><span class="dot"></span>Applications open</div>
+    <div class="hero-top">
+      <div class="hero-tag reveal"><span class="dot"></span>Applications open</div>
+      <!-- Easter egg: the note plays the hackathon song "Sue Me Maybe"; clicking it again stops it. -->
+      <button type="button" class="song-note reveal" id="songNote" aria-label="Play the hackathon song Sue Me Maybe"
+        aria-pressed="false" title="Sue Me Maybe">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.5V4l6 2.5"/><circle cx="8.5" cy="17.5" r="3.5"/></svg>
+      </button>
+    </div>
+    <audio id="song" src="audio/SueMeMaybe.mp3" preload="none"></audio>
     <h1 class="reveal">hack<br>the <span class="accent" id="typed-text"></span><span id="typed-cursor"></span></h1>
     <p class="hero-oneliner reveal reveal-d1">
       The first <strong>Legal Hackathon</strong> at the University of St. Gallen.

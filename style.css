@@ -250,6 +250,56 @@ nav.scrolled { box-shadow: 0 4px 30px rgba(0, 255, 136, 0.03); }
   text-transform: uppercase;
   width: fit-content;
 }
+.hero-top {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
+}
+.hero-top .hero-tag { margin-bottom: 0; }
+
+/* Easter egg: the round note beside the tag plays the hackathon song */
+.song-note {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(0, 255, 136, 0.25);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--green);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+.song-note svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.song-note:hover,
+.song-note:focus-visible,
+.song-note.playing { background: var(--green); border-color: var(--green); color: var(--bg); }
+.song-note.playing::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  animation: song-pulse 1.8s ease-out infinite;
+}
+@keyframes song-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); }
+  100% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .song-note.playing::after { animation: none; }
+}
+
 .hero-tag .dot {
   width: 6px;
   height: 6px;

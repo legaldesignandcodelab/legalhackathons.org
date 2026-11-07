@@ -305,3 +305,29 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     })
     .catch(() => {});
 })();
+
+/* ── Easter egg: the note in the hero plays the hackathon song ── */
+(function () {
+  const note = document.getElementById('songNote');
+  const song = document.getElementById('song');
+  if (!note || !song) return;
+
+  function mark(playing) {
+    note.classList.toggle('playing', playing);
+    note.setAttribute('aria-pressed', String(playing));
+    note.setAttribute('aria-label', playing ? 'Stop the hackathon song' : 'Play the hackathon song Sue Me Maybe');
+  }
+
+  note.addEventListener('click', function () {
+    if (!song.paused) {
+      song.pause();
+      song.currentTime = 0;
+      mark(false);
+      return;
+    }
+    const played = song.play();
+    if (played && typeof played.catch === 'function') played.catch(() => mark(false));
+    mark(true);
+  });
+  song.addEventListener('ended', () => mark(false));
+})();
