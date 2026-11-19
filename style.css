@@ -995,3 +995,105 @@ footer a { color: var(--muted); font-size: 0.7rem; }
   .stats-inner { grid-template-columns: 1fr; }
   .steps { grid-template-columns: 1fr; }
 }
+
+/* ── Impressions 2026 window ── */
+.impressions {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 6.5rem 1.5rem 0;
+}
+.impressions + .hero { min-height: auto; padding-top: 4rem; }
+.imp-window {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0, 255, 136, 0.05);
+}
+.imp-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.6rem 1rem;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.imp-dots { display: inline-flex; gap: 6px; }
+.imp-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--dim); }
+.imp-dots i:first-child { background: var(--green); }
+.imp-title { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+.imp-body { padding: 1.75rem 1.5rem; }
+.imp-heading {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+.imp-heading em { font-style: normal; color: var(--green); }
+.imp-sub { color: var(--muted); font-weight: 300; margin-bottom: 1.5rem; }
+.imp-posts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.imp-post iframe { width: 100%; height: 480px; border: 0; border-radius: 6px; background: #fff; display: block; }
+.imp-post.imp-placeholder { height: 260px; }
+.imp-photos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+}
+.imp-photo { aspect-ratio: 4 / 3; border-radius: 6px; overflow: hidden; }
+.imp-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--transition); }
+.imp-photo img:hover { transform: scale(1.04); }
+.imp-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--dim);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.imp-next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(0, 255, 136, 0.25);
+  border-radius: 6px;
+  background: var(--green-dim);
+}
+.imp-next-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.imp-next-label .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  animation: pulse-dot 2s ease infinite;
+}
+.imp-next-date { font-size: clamp(1.3rem, 3vw, 1.8rem); font-weight: 700; letter-spacing: -0.02em; }
+.imp-next-meta { font-family: var(--font-mono); font-size: 0.75rem; color: var(--cyan); }
+
+@media (max-width: 768px) {
+  .impressions { padding-top: 5rem; padding-left: 1rem; padding-right: 1rem; }
+  .imp-body { padding: 1.25rem 1rem; }
+  .impressions + .hero { padding-top: 3rem; }
+  .imp-photos { grid-template-columns: repeat(2, 1fr); }
+}
